@@ -114,13 +114,14 @@ struct MainView: View {
                 }
                 .buttonStyle(SubtleButtonStyle())
                 .disabled(selectedMacro == nil || recorder.isRecording || recorder.isReplaying)
-                .keyboardShortcut(.init(.p), modifiers: [.command, .option])
 
-                Button(action: replayer.replayMostRecentMacro) {
-                    Label("Replay Latest", systemImage: "gobackward")
+                Button(action: replayer.togglePlayback) {
+                    Label(replayer.isReplaying ? "Stop Playback" : "Replay Latest",
+                          systemImage: replayer.isReplaying ? "stop.circle" : "gobackward")
                 }
-                .buttonStyle(SubtleButtonStyle())
-                .disabled(macroManager.mostRecentMacro == nil || recorder.isRecording || recorder.isReplaying)
+                .buttonStyle(SubtleButtonStyle(isDestructive: replayer.isReplaying))
+                .disabled((macroManager.mostRecentMacro == nil && !replayer.isReplaying) || recorder.isRecording)
+                .keyboardShortcut(.init(.p), modifiers: [.command, .option])
             }
 
             Divider()

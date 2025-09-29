@@ -66,6 +66,7 @@ final class MenuBarController: NSObject, ObservableObject {
         let recordingTitle = recorder.isRecording ? "Stop Recording" : "Start Recording"
         let recordingItem = NSMenuItem(title: recordingTitle, action: #selector(toggleRecording), keyEquivalent: "")
         recordingItem.target = self
+        recordingItem.isEnabled = !recorder.isReplaying
         menu.addItem(recordingItem)
 
         let playbackTitle = replayer.isReplaying ? "Stop Playback" : "Replay Latest Macro"
@@ -116,16 +117,17 @@ final class MenuBarController: NSObject, ObservableObject {
     }
 
     @objc private func togglePlayback() {
-        if replayer.isReplaying {
-            replayer.stop()
-        } else if let macro = macroManager.mostRecentMacro {
-            replayer.replay(macro)
-        }
+        replayer.togglePlayback()
     }
 
     @objc private func openMainWindow() {
         NSApp.activate(ignoringOtherApps: true)
-        if let window = NSApp.windows.first(where: { $0.isVisible }) {
+        let visibleWindows = NSApp.windows.filter { $0.isVisible && $0.canBecomeKey }
+        if visibleWindows.isEmpty {
+            NSApp.sendAction(#selector(NSApplication.showAllWindows), to: nil, from: nil)
+        }
+        let windowsToShow = visibleWindows.isEmpty ? NSApp.windows : visibleWindows
+        for window in windowsToShow where window.canBecomeKey {
             window.makeKeyAndOrderFront(nil)
         }
     }
