@@ -8,11 +8,14 @@ import ApplicationServices
 final class Replayer: ObservableObject {
     @Published private(set) var isReplaying: Bool = false
     private weak var recorder: Recorder?
+    private let macroManager: MacroManager
     private let playbackQueue = DispatchQueue(label: "com.macroRecorder.playback")
     private var playbackHotKey: UInt32 = 0
+    private var shouldCancelPlayback = false
 
-    init(recorder: Recorder?) {
+    init(recorder: Recorder?, macroManager: MacroManager) {
         self.recorder = recorder
+        self.macroManager = macroManager
         registerHotKey()
     }
 
@@ -35,11 +38,13 @@ final class Replayer: ObservableObject {
         }
 
         isReplaying = true
+        shouldCancelPlayback = false
         recorder?.markReplaying()
 
         playbackQueue.async { [weak self] in
             guard let self else { return }
             for event in macro.events {
+                if self.shouldCancelPlayback { break }
                 if event.delay > 0 {
                     Thread.sleep(forTimeInterval: event.delay)
                 }
@@ -47,6 +52,7 @@ final class Replayer: ObservableObject {
             }
 
             DispatchQueue.main.async {
+                self.shouldCancelPlayback = false
                 self.isReplaying = false
                 self.recorder?.markIdle()
             }
@@ -54,8 +60,13 @@ final class Replayer: ObservableObject {
     }
 
     func replayMostRecentMacro() {
-        guard let macro = recorder?.mostRecentMacro else { return }
+        guard let macro = macroManager.mostRecentMacro else { return }
         replay(macro)
+    }
+
+    func stop() {
+        guard isReplaying else { return }
+        shouldCancelPlayback = true
     }
 
     private func registerHotKey() {
