@@ -1,0 +1,87 @@
+name: Build macOS App
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    env:
+      APP_NAME: Recurra
+      SCHEME: Recurra
+      BUILD_DIR: build
+      DMG_NAME: Recurra.dmg
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build app
+        run: |
+          xcodebuild \
+            -scheme "$SCHEME" \
+            -configuration Release \
+            -derivedDataPath "$BUILD_DIR" \
+            clean build
+
+      - name: Prepare app bundle
+        run: |
+          APP_PATH="$BUILD_DIR/Build/Products/Release/$APP_NAME.app"
+          mkdir -p "$BUILD_DIR/dmg"
+          cp -R "$APP_PATH" "$BUILD_DIR/dmg/"
+
+      - name: Create DMG
+        run: |
+          hdiutil create \
+            -volname "$APP_NAME" \
+            -srcfolder "$BUILD_DIR/dmg" \
+            -ov \
+            -format UDZO \
+            "$BUILD_DIR/$DMG_NAME"
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}-dmg
+          path: ${{ env.BUILD_DIR }}/${{ env.DMG_NAME }}
+
+      - name: Attach DMG to GitHub Release
+        if: github.event_name == 'release'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ${{ env.BUILD_DIR }}/${{ env.DMG_NAME }}
+          asset_name: ${{ env.DMG_NAME }}
+          asset_content_type: application/x-apple-diskimage
+
+# To notarize/sign locally before distribution:
+#   1. Enroll in the Apple Developer Program and create an App-Specific Password.
+#   2. Sign the app:
+#        codesign --deep --force --options runtime \
+#          --sign "Developer ID Application: Your Name (TEAMID)" "Recurra.app"
+#   3. Create the DMG:
+#        hdiutil create -volname "Recurra" -srcfolder Recurra.app -ov -format UDZO Recurra.dmg
+#   4. Notarize:
+#        xcrun notarytool submit Recurra.dmg \
+#          --apple-id YOUR_APPLE_ID \
+#          --team-id TEAMID \
+#          --password APP_SPECIFIC_PASSWORD \
+#          --wait
+#   5. Staple the ticket:
+#        xcrun stapler staple Recurra.dmg
+#   6. Verify:
+#        xcrun stapler validate Recurra.dmg
