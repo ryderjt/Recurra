@@ -155,20 +155,26 @@ final class Recorder: ObservableObject {
             return
         }
 
-        let mask = CGEventMask((1 << CGEventType.keyDown.rawValue)
-                               | (1 << CGEventType.keyUp.rawValue)
-                               | (1 << CGEventType.flagsChanged.rawValue)
-                               | (1 << CGEventType.leftMouseDown.rawValue)
-                               | (1 << CGEventType.leftMouseUp.rawValue)
-                               | (1 << CGEventType.rightMouseDown.rawValue)
-                               | (1 << CGEventType.rightMouseUp.rawValue)
-                               | (1 << CGEventType.otherMouseDown.rawValue)
-                               | (1 << CGEventType.otherMouseUp.rawValue)
-                               | (1 << CGEventType.mouseMoved.rawValue)
-                               | (1 << CGEventType.scrollWheel.rawValue)
-                               | (1 << CGEventType.leftMouseDragged.rawValue)
-                               | (1 << CGEventType.rightMouseDragged.rawValue)
-                               | (1 << CGEventType.otherMouseDragged.rawValue))
+        let monitoredEventTypes: [CGEventType] = [
+            .keyDown,
+            .keyUp,
+            .flagsChanged,
+            .leftMouseDown,
+            .leftMouseUp,
+            .rightMouseDown,
+            .rightMouseUp,
+            .otherMouseDown,
+            .otherMouseUp,
+            .mouseMoved,
+            .scrollWheel,
+            .leftMouseDragged,
+            .rightMouseDragged,
+            .otherMouseDragged
+        ]
+
+        let mask = monitoredEventTypes.reduce(CGEventMask(0)) { partial, eventType in
+            partial | (CGEventMask(1) << CGEventMask(eventType.rawValue))
+        }
 
         let callback: CGEventTapCallBack = { proxy, type, event, userInfo in
             guard let userInfo = userInfo else { return Unmanaged.passUnretained(event) }

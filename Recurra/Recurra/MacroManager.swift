@@ -2,7 +2,7 @@ import Foundation
 import Combine
 import ApplicationServices
 
-struct RecordedMacro: Identifiable {
+struct RecordedMacro: Identifiable, Equatable {
     struct TimedEvent {
         let delay: TimeInterval
         let event: CGEvent
@@ -13,6 +13,10 @@ struct RecordedMacro: Identifiable {
     let createdAt: Date
     let events: [TimedEvent]
     let duration: TimeInterval
+
+    static func == (lhs: RecordedMacro, rhs: RecordedMacro) -> Bool {
+        lhs.id == rhs.id
+    }
 }
 
 final class MacroManager: ObservableObject {

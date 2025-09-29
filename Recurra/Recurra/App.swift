@@ -34,7 +34,7 @@ struct RecurraApp: App {
                 Button(recorder.isRecording ? "Stop Recording" : "Start Recording") {
                     recorder.toggleRecording()
                 }
-                .keyboardShortcut("r", modifiers: [.command, .option])
+                .keyboardShortcut(.r, modifiers: [.command, .option])
                 .disabled(recorder.isReplaying)
 
                 Button(replayer.isReplaying ? "Stop Playback" : "Replay Latest Macro") {
@@ -44,7 +44,7 @@ struct RecurraApp: App {
                         replayer.replayMostRecentMacro()
                     }
                 }
-                .keyboardShortcut("p", modifiers: [.command, .option])
+                .keyboardShortcut(.p, modifiers: [.command, .option])
                 .disabled(!replayer.isReplaying && macroManager.mostRecentMacro == nil)
             }
         }
