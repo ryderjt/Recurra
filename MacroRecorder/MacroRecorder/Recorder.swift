@@ -142,11 +142,12 @@ final class Recorder: ObservableObject {
     }
 
     func toggleRecording() {
+        guard !isReplaying else { return }
         isRecording ? stopRecording() : startRecording()
     }
 
     func startRecording() {
-        guard !isRecording else { return }
+        guard !isRecording, !isReplaying else { return }
         guard ensureAccessibilityPermission() else {
             DispatchQueue.main.async {
                 self.status = .permissionDenied

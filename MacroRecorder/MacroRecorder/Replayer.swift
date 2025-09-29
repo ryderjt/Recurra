@@ -64,6 +64,14 @@ final class Replayer: ObservableObject {
         replay(macro)
     }
 
+    func togglePlayback() {
+        if isReplaying {
+            stop()
+        } else {
+            replayMostRecentMacro()
+        }
+    }
+
     func stop() {
         guard isReplaying else { return }
         shouldCancelPlayback = true
@@ -73,7 +81,7 @@ final class Replayer: ObservableObject {
         let modifiers = UInt32(cmdKey | optionKey)
         playbackHotKey = HotKeyCenter.shared.register(keyCode: UInt32(kVK_ANSI_P), modifiers: modifiers) { [weak self] in
             DispatchQueue.main.async {
-                self?.replayMostRecentMacro()
+                self?.togglePlayback()
             }
         }
     }
