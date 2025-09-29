@@ -1,0 +1,51 @@
+name: macOS DMG Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.2'
+
+      - name: Build Release app
+        run: |
+          set -eo pipefail
+          xcodebuild \
+            -project Recurra/Recurra.xcodeproj \
+            -scheme Recurra \
+            -configuration Release \
+            -derivedDataPath build \
+            clean build
+        env:
+          NSUnbufferedIO: 'YES'
+
+      - name: Create DMG
+        run: |
+          set -euo pipefail
+          APP_PATH="build/Build/Products/Release/Recurra.app"
+          STAGING="build/dmg-staging"
+          mkdir -p "$STAGING"
+          cp -R "$APP_PATH" "$STAGING/"
+          hdiutil create \
+            -volname "Recurra" \
+            -srcfolder "$STAGING" \
+            -ov \
+            -format UDZO \
+            build/Recurra.dmg
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Recurra.dmg
+          path: build/Recurra.dmg
