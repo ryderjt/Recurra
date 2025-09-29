@@ -25,7 +25,11 @@ jobs:
             -project Recurra/Recurra.xcodeproj \
             -scheme Recurra \
             -configuration Release \
+            -destination 'platform=macOS' \
             -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY='' \
             clean build
         env:
           NSUnbufferedIO: 'YES'
