@@ -129,11 +129,15 @@ final class Recorder: ObservableObject {
     private var totalRecordingDuration: TimeInterval = 0
     private var hotKeyIdentifier: UInt32 = 0
     private var recordingCount = 1
+    private var cancellables: Set<AnyCancellable> = []
 
     init(macroManager: MacroManager) {
         self.macroManager = macroManager
-        nextMacroName = Recorder.defaultName(for: 1)
+        let initialCount = max(macroManager.macros.count + 1, 1)
+        recordingCount = initialCount
+        nextMacroName = Recorder.defaultName(for: initialCount)
         registerHotKey()
+        observeMacroLibrary()
     }
 
     deinit {
@@ -298,6 +302,22 @@ final class Recorder: ObservableObject {
                 self?.toggleRecording()
             }
         }
+    }
+
+    private func observeMacroLibrary() {
+        macroManager.$macros
+            .receive(on: RunLoop.main)
+            .sink { [weak self] macros in
+                guard let self else { return }
+                let suggestedIndex = max(macros.count + 1, 1)
+                self.recordingCount = suggestedIndex
+                let trimmedName = self.nextMacroName.trimmingCharacters(in: .whitespacesAndNewlines)
+                let isUsingDefault = trimmedName.isEmpty || trimmedName.hasPrefix("Macro #")
+                if !self.isRecording && isUsingDefault {
+                    self.nextMacroName = Recorder.defaultName(for: suggestedIndex)
+                }
+            }
+            .store(in: &cancellables)
     }
 
     private static func defaultName(for index: Int) -> String {
