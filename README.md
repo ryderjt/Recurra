@@ -13,6 +13,7 @@ A lightweight SwiftUI macro recorder for macOS that captures keyboard and mouse 
 - ⌨️ High-fidelity recording of keyboard and mouse events backed by Accessibility permissions.
 - ▶️ Smooth, cancellable playback with safe timing across the entire macro.
 - 📁 Macro library with rename, delete, and replay actions plus customizable default names.
+- 💾 Persistent macro storage backed by Application Support serialization.
 - 🔑 Global hotkeys for record (`⌘⌥R`) and replay (`⌘⌥P`).
 - ♿ Text-based onboarding to request Accessibility permissions when required.
 
@@ -52,7 +53,6 @@ Recurra/
 ## Known Limitations
 
 - Some games and secure apps block synthetic events, so playback may be ignored.
-- Macros are stored for the current session; persisting them between launches is on the roadmap.
 - Background recording is paused if the system revokes the Accessibility permission.
 
 ## Roadmap
@@ -62,7 +62,7 @@ Recurra/
 | ✅ | Menu bar controls and SwiftUI command menu |
 | ✅ | In-app macro library with rename/delete |
 | ✅ | Global hotkeys for record & replay |
-| ⏳ | Persistent macro storage using on-disk serialization |
+| ✅ | Persistent macro storage using on-disk serialization |
 | ⏳ | Timeline editor to tweak delays |
 | ⏳ | Sharing/export support |
 
