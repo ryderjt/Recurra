@@ -1,0 +1,71 @@
+name: Build macOS DMG
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build DMG
+    runs-on: macos-13
+
+    env:
+      PROJECT_PATH: Recurra/Recurra.xcodeproj
+      SCHEME: Recurra
+      CONFIGURATION: Release
+      DERIVED_DATA_PATH: build
+      ARCHIVE_PATH: build/Recurra.xcarchive
+      APP_NAME: Recurra.app
+      DMG_NAME: Recurra.dmg
+      STAGING_DIR: build/dmg
+      DIST_DIR: dist
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Select latest Xcode
+        run: sudo xcode-select -s "/Applications/Xcode.app"
+
+      - name: Build application
+        run: |
+          xcodebuild \
+            -project "$PROJECT_PATH" \
+            -scheme "$SCHEME" \
+            -configuration "$CONFIGURATION" \
+            -derivedDataPath "$DERIVED_DATA_PATH" \
+            -archivePath "$ARCHIVE_PATH" \
+            clean archive
+
+      - name: Prepare app bundle
+        run: |
+          APP_BUILD_PATH="$DERIVED_DATA_PATH/Build/Products/$CONFIGURATION/$APP_NAME"
+          if [ ! -d "$APP_BUILD_PATH" ]; then
+            echo "App bundle not found at $APP_BUILD_PATH" >&2
+            exit 1
+          fi
+          rm -rf "$STAGING_DIR"
+          mkdir -p "$STAGING_DIR"
+          cp -R "$APP_BUILD_PATH" "$STAGING_DIR/$APP_NAME"
+
+      - name: Create DMG
+        run: |
+          mkdir -p "$DIST_DIR"
+          hdiutil create \
+            -volname "Recurra" \
+            -srcfolder "$STAGING_DIR" \
+            -ov \
+            -format UDZO \
+            "$DIST_DIR/$DMG_NAME"
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Recurra-dmg
+          path: ${{ env.DIST_DIR }}/${{ env.DMG_NAME }}
+          if-no-files-found: error
