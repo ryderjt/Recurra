@@ -1,45 +1,459 @@
 import SwiftUI
+import AppKit
 
 struct ContentView: View {
-    @StateObject private var recorder = RecordManager()
-    @StateObject private var replayer = ReplayManager()
+    @StateObject private var recorder: Recorder
+    @StateObject private var replayer: Replayer
+    @State private var selectedMacroID: RecordedMacro.ID?
+
+    init() {
+        let recorder = Recorder()
+        _recorder = StateObject(wrappedValue: recorder)
+        _replayer = StateObject(wrappedValue: Replayer(recorder: recorder))
+    }
 
     var body: some View {
-        VStack(spacing: 16) {
-            Text("Macro Recorder")
-                .font(.largeTitle)
-                .fontWeight(.semibold)
+        ZStack {
+            LinearGradient(colors: [Color(red: 0.86, green: 0.91, blue: 0.99),
+                                    Color(red: 0.58, green: 0.68, blue: 0.98)],
+                           startPoint: .topLeading,
+                           endPoint: .bottomTrailing)
+                .ignoresSafeArea()
 
-            Text("Capture and replay your keyboard and mouse actions with ease.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-            HStack(spacing: 24) {
-                Button(action: toggleRecording) {
-                    Text(recorder.isRecording ? "Stop Recording" : "Record")
-                        .frame(minWidth: 120)
-                }
-                .buttonStyle(.borderedProminent)
-
-                Button(action: replayer.replay) {
-                    Text("Replay")
-                        .frame(minWidth: 120)
-                }
-                .buttonStyle(.bordered)
-                .disabled(recorder.recordedEvents.isEmpty)
+            NavigationSplitView(sidebar: {
+                sidebar
+                    .frame(minWidth: 260)
+            }, detail: {
+                detail
+            })
+            .navigationSplitViewStyle(.prominentDetail)
+        }
+        .frame(minWidth: 920, minHeight: 560)
+        .onAppear {
+            replayer.attach(recorder: recorder)
+            if selectedMacroID == nil {
+                selectedMacroID = recorder.mostRecentMacro?.id
             }
         }
-        .padding(40)
-        .frame(minWidth: 420, minHeight: 280)
-    }
-
-    private func toggleRecording() {
-        if recorder.isRecording {
-            recorder.stopRecording()
-        } else {
-            recorder.startRecording()
+        .onChange(of: recorder.macros) { macros in
+            guard !macros.isEmpty else {
+                selectedMacroID = nil
+                return
+            }
+            if let selectedMacroID, macros.contains(where: { $0.id == selectedMacroID }) {
+                return
+            }
+            selectedMacroID = macros.first?.id
         }
     }
+
+    private var sidebar: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Saved Macros")
+                .font(.title2.weight(.semibold))
+                .padding(.top, 32)
+                .padding(.horizontal, 20)
+
+            List(selection: $selectedMacroID) {
+                if recorder.macros.isEmpty {
+                    ContentUnavailableView("No recordings yet",
+                                           systemImage: "square.and.pencil",
+                                           description: Text("Record a macro to see it listed here."))
+                        .listRowBackground(Color.clear)
+                } else {
+                    ForEach(recorder.macros) { macro in
+                        MacroRow(macro: macro,
+                                 isSelected: macro.id == selectedMacroID,
+                                 replayAction: { replayer.replay(macro) },
+                                 deleteAction: { recorder.removeMacro(macro) })
+                            .tag(macro.id)
+                            .listRowSeparator(.hidden)
+                    }
+                    .onDelete(perform: recorder.removeMacros)
+                }
+            }
+            .listStyle(.sidebar)
+            .scrollContentBackground(.hidden)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.ultraThinMaterial)
+    }
+
+    private var detail: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            header
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Next macro name")
+                    .font(.headline)
+                TextField("Macro name", text: $recorder.nextMacroName)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.trailing, 200)
+                    .onSubmit {
+                        recorder.nextMacroName = recorder.nextMacroName.trimmingCharacters(in: .whitespaces)
+                    }
+            }
+
+            HStack(spacing: 18) {
+                Button(action: recorder.toggleRecording) {
+                    Label(recorder.isRecording ? "Stop" : "Record", systemImage: recorder.isRecording ? "stop.circle.fill" : "record.circle")
+                        .font(.headline)
+                }
+                .buttonStyle(GradientButtonStyle(isDestructive: recorder.isRecording))
+                .disabled(recorder.isReplaying)
+                .keyboardShortcut(.init(.r), modifiers: [.command, .option])
+
+                Button(action: replaySelected) {
+                    Label("Replay Selected", systemImage: "play.circle")
+                        .font(.headline)
+                }
+                .buttonStyle(SubtleButtonStyle())
+                .disabled(selectedMacro == nil || recorder.isRecording || recorder.isReplaying)
+                .keyboardShortcut(.init(.p), modifiers: [.command, .option])
+
+                Button(action: replayer.replayMostRecentMacro) {
+                    Label("Replay Latest", systemImage: "gobackward")
+                }
+                .buttonStyle(SubtleButtonStyle())
+                .disabled(recorder.mostRecentMacro == nil || recorder.isRecording || recorder.isReplaying)
+            }
+
+            Divider()
+                .padding(.vertical, 4)
+
+            if let selectedMacro {
+                MacroDetailCard(macro: selectedMacro, playAction: {
+                    replayer.replay(selectedMacro)
+                }, deleteAction: {
+                    recorder.removeMacro(selectedMacro)
+                })
+            } else {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("No macro selected")
+                        .font(.headline)
+                    Text("Pick a macro from the sidebar to see its timeline and quick actions.")
+                        .foregroundStyle(.secondary)
+                }
+                .padding(24)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.white.opacity(0.25)))
+                .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Color.white.opacity(0.35)))
+            }
+
+            Spacer()
+
+            footer
+        }
+        .padding(40)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+    }
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center, spacing: 16) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Macro Recorder")
+                        .font(.largeTitle.bold())
+                    Text("Capture and replay keyboard and mouse flows with a minimalist workspace.")
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                StatusBadge(status: recorder.status)
+            }
+
+            if recorder.status == .permissionDenied {
+                PermissionPrompt()
+            }
+        }
+    }
+
+    private var footer: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Shortcuts")
+                .font(.headline)
+            HStack(spacing: 16) {
+                ShortcutBadge(icon: "record.circle", title: "Toggle recording", shortcut: "⌘⌥R")
+                ShortcutBadge(icon: "play.circle", title: "Replay latest", shortcut: "⌘⌥P")
+            }
+            Text("Grant Accessibility permissions when prompted so the app can monitor and replay events.")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+    }
+
+    private var selectedMacro: RecordedMacro? {
+        if let id = selectedMacroID, let macro = recorder.macros.first(where: { $0.id == id }) {
+            return macro
+        }
+        return recorder.mostRecentMacro
+    }
+
+    private func replaySelected() {
+        guard let macro = selectedMacro else { return }
+        replayer.replay(macro)
+    }
+}
+
+// MARK: - Subviews
+
+private struct MacroRow: View {
+    let macro: RecordedMacro
+    let isSelected: Bool
+    let replayAction: () -> Void
+    let deleteAction: () -> Void
+
+    private static let relativeFormatter: RelativeDateTimeFormatter = {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .full
+        return formatter
+    }()
+
+    var body: some View {
+        HStack(alignment: .center, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(macro.name)
+                    .font(.headline)
+                Text(Self.relativeFormatter.localizedString(for: macro.createdAt, relativeTo: .now))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            HStack(spacing: 8) {
+                Button(action: replayAction) {
+                    Image(systemName: "play.fill")
+                }
+                .buttonStyle(RowIconButtonStyle())
+
+                Button(role: .destructive, action: deleteAction) {
+                    Image(systemName: "trash")
+                }
+                .buttonStyle(RowIconButtonStyle())
+            }
+        }
+        .padding(.vertical, 8)
+        .padding(.horizontal, 12)
+        .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(isSelected ? Color.white.opacity(0.35) : Color.clear)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.white.opacity(isSelected ? 0.6 : 0.25))
+        )
+        .listRowBackground(Color.clear)
+    }
+}
+
+private struct MacroDetailCard: View {
+    let macro: RecordedMacro
+    let playAction: () -> Void
+    let deleteAction: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .center) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(macro.name)
+                        .font(.title2.weight(.semibold))
+                    Text(macro.createdAt.formatted(date: .abbreviated, time: .shortened))
+                        .foregroundStyle(.secondary)
+                }
+                Spacer()
+                VStack(alignment: .trailing, spacing: 4) {
+                    Label("\(macro.events.count)", systemImage: "square.stack.3d.down.forward")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Label(durationString(for: macro), systemImage: "timer")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            HStack(spacing: 12) {
+                Button("Replay Macro", action: playAction)
+                    .buttonStyle(GradientButtonStyle(isDestructive: false))
+                Button("Delete", role: .destructive, action: deleteAction)
+                    .buttonStyle(SubtleButtonStyle(isDestructive: true))
+            }
+        }
+        .padding(28)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: 24, style: .continuous).fill(Color.white.opacity(0.32)))
+        .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(Color.white.opacity(0.45)))
+    }
+
+    private func durationString(for macro: RecordedMacro) -> String {
+        let seconds = max(0, macro.duration)
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = seconds > 60 ? [.minute, .second] : [.second]
+        formatter.unitsStyle = .short
+        return formatter.string(from: seconds) ?? "--"
+    }
+}
+
+private struct StatusBadge: View {
+    let status: Recorder.Status
+
+    var body: some View {
+        Text(status.description)
+            .font(.subheadline.weight(.semibold))
+            .padding(.vertical, 8)
+            .padding(.horizontal, 14)
+            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(color.opacity(0.2)))
+            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(color.opacity(0.5)))
+            .foregroundColor(color)
+    }
+
+    private var color: Color {
+        switch status {
+        case .idle:
+            return Color.green.opacity(0.8)
+        case .recording:
+            return Color.red
+        case .replaying:
+            return Color.blue
+        case .permissionDenied:
+            return Color.orange
+        }
+    }
+}
+
+private struct PermissionPrompt: View {
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundStyle(.orange)
+            Text("Accessibility permission is required to record and replay events.")
+                .font(.callout)
+            Button("Open Settings", action: openAccessibilityPreferences)
+                .buttonStyle(SubtleButtonStyle())
+        }
+        .padding(14)
+        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.white.opacity(0.25)))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Color.white.opacity(0.4)))
+    }
+}
+
+private struct ShortcutBadge: View {
+    let icon: String
+    let title: String
+    let shortcut: String
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: icon)
+            Text(title)
+            Spacer(minLength: 8)
+            Text(shortcut)
+                .font(.subheadline.monospaced())
+        }
+        .padding(12)
+        .frame(maxWidth: 240)
+        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color.white.opacity(0.2)))
+        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Color.white.opacity(0.35)))
+    }
+}
+
+private struct GradientButtonStyle: ButtonStyle {
+    var isDestructive: Bool
+
+    func makeBody(configuration: Configuration) -> some View {
+        GradientButton(configuration: configuration, isDestructive: isDestructive)
+    }
+
+    private struct GradientButton: View {
+        let configuration: Configuration
+        let isDestructive: Bool
+        @State private var hovering = false
+
+        var body: some View {
+            configuration.label
+                .padding(.vertical, 12)
+                .padding(.horizontal, 26)
+                .background(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(LinearGradient(colors: gradientColors,
+                                             startPoint: .topLeading,
+                                             endPoint: .bottomTrailing))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .stroke(Color.white.opacity(0.45))
+                )
+                .shadow(color: Color.black.opacity(hovering ? 0.18 : 0.12), radius: hovering ? 12 : 8, x: 0, y: hovering ? 6 : 4)
+                .scaleEffect(configuration.isPressed ? 0.97 : 1)
+                .animation(.easeOut(duration: 0.18), value: hovering)
+                .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+                .onHover { hovering in
+                    self.hovering = hovering
+                }
+        }
+
+        private var gradientColors: [Color] {
+            if isDestructive {
+                return [Color(red: 0.97, green: 0.58, blue: 0.58), Color(red: 0.86, green: 0.21, blue: 0.34)]
+            }
+            return [Color(red: 0.6, green: 0.75, blue: 1.0), Color(red: 0.37, green: 0.55, blue: 0.98)]
+        }
+    }
+}
+
+private struct SubtleButtonStyle: ButtonStyle {
+    var isDestructive: Bool = false
+
+    func makeBody(configuration: Configuration) -> some View {
+        SubtleButton(configuration: configuration, isDestructive: isDestructive)
+    }
+
+    private struct SubtleButton: View {
+        let configuration: Configuration
+        let isDestructive: Bool
+        @State private var hovering = false
+
+        var body: some View {
+            configuration.label
+                .padding(.vertical, 10)
+                .padding(.horizontal, 22)
+                .background(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .fill(Color.white.opacity(hovering ? 0.28 : 0.18))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color.white.opacity(0.35))
+                )
+                .foregroundStyle(isDestructive ? Color.red : Color.primary)
+                .shadow(color: Color.black.opacity(hovering ? 0.15 : 0.08), radius: hovering ? 10 : 4, x: 0, y: hovering ? 4 : 2)
+                .scaleEffect(configuration.isPressed ? 0.98 : 1)
+                .animation(.easeOut(duration: 0.18), value: hovering)
+                .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+                .onHover { hovering in
+                    self.hovering = hovering
+                }
+        }
+    }
+}
+
+private struct RowIconButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(8)
+            .background(
+                Circle().fill(Color.white.opacity(configuration.isPressed ? 0.35 : 0.2))
+            )
+            .overlay(
+                Circle().stroke(Color.white.opacity(0.35))
+            )
+            .foregroundStyle(.primary)
+            .scaleEffect(configuration.isPressed ? 0.9 : 1)
+            .contentShape(Circle())
+    }
+}
+
+private func openAccessibilityPreferences() {
+    guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") else { return }
+    NSWorkspace.shared.open(url)
 }
 
 #Preview {
