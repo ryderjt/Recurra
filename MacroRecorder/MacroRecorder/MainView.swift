@@ -1,16 +1,14 @@
 import SwiftUI
 import AppKit
 
-struct ContentView: View {
-    @StateObject private var recorder: Recorder
-    @StateObject private var replayer: Replayer
-    @State private var selectedMacroID: RecordedMacro.ID?
+struct MainView: View {
+    @EnvironmentObject private var recorder: Recorder
+    @EnvironmentObject private var replayer: Replayer
+    @EnvironmentObject private var macroManager: MacroManager
 
-    init() {
-        let recorder = Recorder()
-        _recorder = StateObject(wrappedValue: recorder)
-        _replayer = StateObject(wrappedValue: Replayer(recorder: recorder))
-    }
+    @State private var selectedMacroID: RecordedMacro.ID?
+    @State private var renameText: String = ""
+    @FocusState private var isRenaming: Bool
 
     var body: some View {
         ZStack {
@@ -30,20 +28,24 @@ struct ContentView: View {
         }
         .frame(minWidth: 920, minHeight: 560)
         .onAppear {
-            replayer.attach(recorder: recorder)
             if selectedMacroID == nil {
-                selectedMacroID = recorder.mostRecentMacro?.id
+                selectedMacroID = macroManager.mostRecentMacro?.id
             }
+            renameText = selectedMacro?.name ?? ""
         }
-        .onChange(of: recorder.macros) { macros in
+        .onChange(of: macroManager.macros) { macros in
             guard !macros.isEmpty else {
                 selectedMacroID = nil
+                renameText = ""
                 return
             }
             if let selectedMacroID, macros.contains(where: { $0.id == selectedMacroID }) {
                 return
             }
             selectedMacroID = macros.first?.id
+        }
+        .onChange(of: selectedMacroID) { _ in
+            renameText = selectedMacro?.name ?? ""
         }
     }
 
@@ -55,21 +57,24 @@ struct ContentView: View {
                 .padding(.horizontal, 20)
 
             List(selection: $selectedMacroID) {
-                if recorder.macros.isEmpty {
+                if macroManager.macros.isEmpty {
                     ContentUnavailableView("No recordings yet",
                                            systemImage: "square.and.pencil",
                                            description: Text("Record a macro to see it listed here."))
                         .listRowBackground(Color.clear)
                 } else {
-                    ForEach(recorder.macros) { macro in
+                    ForEach(macroManager.macros) { macro in
                         MacroRow(macro: macro,
                                  isSelected: macro.id == selectedMacroID,
                                  replayAction: { replayer.replay(macro) },
-                                 deleteAction: { recorder.removeMacro(macro) })
+                                 renameAction: { startRenaming(macro) },
+                                 deleteAction: { macroManager.remove(macro) })
                             .tag(macro.id)
                             .listRowSeparator(.hidden)
                     }
-                    .onDelete(perform: recorder.removeMacros)
+                    .onDelete { offsets in
+                        macroManager.remove(at: offsets)
+                    }
                 }
             }
             .listStyle(.sidebar)
@@ -115,18 +120,20 @@ struct ContentView: View {
                     Label("Replay Latest", systemImage: "gobackward")
                 }
                 .buttonStyle(SubtleButtonStyle())
-                .disabled(recorder.mostRecentMacro == nil || recorder.isRecording || recorder.isReplaying)
+                .disabled(macroManager.mostRecentMacro == nil || recorder.isRecording || recorder.isReplaying)
             }
 
             Divider()
                 .padding(.vertical, 4)
 
             if let selectedMacro {
-                MacroDetailCard(macro: selectedMacro, playAction: {
-                    replayer.replay(selectedMacro)
-                }, deleteAction: {
-                    recorder.removeMacro(selectedMacro)
-                })
+                MacroDetailCard(macro: selectedMacro,
+                                renameText: $renameText,
+                                isRenaming: $isRenaming,
+                                renameAction: commitRename,
+                                playAction: { replayer.replay(selectedMacro) },
+                                deleteAction: { macroManager.remove(selectedMacro) },
+                                isReplaying: replayer.isReplaying)
             } else {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("No macro selected")
@@ -182,15 +189,32 @@ struct ContentView: View {
     }
 
     private var selectedMacro: RecordedMacro? {
-        if let id = selectedMacroID, let macro = recorder.macros.first(where: { $0.id == id }) {
-            return macro
-        }
-        return recorder.mostRecentMacro
+        macroManager.macro(with: selectedMacroID) ?? macroManager.mostRecentMacro
     }
 
     private func replaySelected() {
         guard let macro = selectedMacro else { return }
         replayer.replay(macro)
+    }
+
+    private func commitRename() {
+        guard let macro = selectedMacro else { return }
+        let trimmed = renameText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else {
+            renameText = macro.name
+            return
+        }
+        macroManager.rename(macro, to: trimmed)
+        renameText = trimmed
+        isRenaming = false
+    }
+
+    private func startRenaming(_ macro: RecordedMacro) {
+        selectedMacroID = macro.id
+        renameText = macro.name
+        DispatchQueue.main.async {
+            isRenaming = true
+        }
     }
 }
 
@@ -200,6 +224,7 @@ private struct MacroRow: View {
     let macro: RecordedMacro
     let isSelected: Bool
     let replayAction: () -> Void
+    let renameAction: () -> Void
     let deleteAction: () -> Void
 
     private static let relativeFormatter: RelativeDateTimeFormatter = {
@@ -224,6 +249,11 @@ private struct MacroRow: View {
                 }
                 .buttonStyle(RowIconButtonStyle())
 
+                Button(action: renameAction) {
+                    Image(systemName: "pencil")
+                }
+                .buttonStyle(RowIconButtonStyle())
+
                 Button(role: .destructive, action: deleteAction) {
                     Image(systemName: "trash")
                 }
@@ -242,16 +272,39 @@ private struct MacroRow: View {
                 .stroke(Color.white.opacity(isSelected ? 0.6 : 0.25))
         )
         .listRowBackground(Color.clear)
+        .contextMenu {
+            Button("Replay", action: replayAction)
+            Button("Rename", action: renameAction)
+            Button("Delete", role: .destructive, action: deleteAction)
+        }
     }
 }
 
 private struct MacroDetailCard: View {
     let macro: RecordedMacro
+    @Binding var renameText: String
+    var isRenaming: FocusState<Bool>.Binding
+    let renameAction: () -> Void
     let playAction: () -> Void
     let deleteAction: () -> Void
+    let isReplaying: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 18) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Macro name")
+                    .font(.headline)
+                HStack(spacing: 10) {
+                    TextField("Macro name", text: $renameText)
+                        .textFieldStyle(.roundedBorder)
+                        .focused(isRenaming)
+                        .onSubmit(renameAction)
+                    Button("Save", action: renameAction)
+                        .buttonStyle(SubtleButtonStyle())
+                        .disabled(renameText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || renameText == macro.name)
+                }
+            }
+
             HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(macro.name)
@@ -273,6 +326,7 @@ private struct MacroDetailCard: View {
             HStack(spacing: 12) {
                 Button("Replay Macro", action: playAction)
                     .buttonStyle(GradientButtonStyle(isDestructive: false))
+                    .disabled(isReplaying)
                 Button("Delete", role: .destructive, action: deleteAction)
                     .buttonStyle(SubtleButtonStyle(isDestructive: true))
             }
@@ -457,5 +511,11 @@ private func openAccessibilityPreferences() {
 }
 
 #Preview {
-    ContentView()
+    let manager = MacroManager()
+    let recorder = Recorder(macroManager: manager)
+    let replayer = Replayer(recorder: recorder, macroManager: manager)
+    return MainView()
+        .environmentObject(manager)
+        .environmentObject(recorder)
+        .environmentObject(replayer)
 }

@@ -7,7 +7,9 @@ objects = {
 
 /* Begin PBXBuildFile section */
 B2E5D0B02B94D2C900A0F11A /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0AF2B94D2C900A0F11A /* App.swift */; };
-B2E5D0B22B94D2C900A0F11A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B12B94D2C900A0F11A /* ContentView.swift */; };
+B2E5D0C22B94D3F200A0F11A /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0C12B94D3F200A0F11A /* MainView.swift */; };
+B2E5D0C42B94D3F200A0F11A /* MacroManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0C32B94D3F200A0F11A /* MacroManager.swift */; };
+B2E5D0C62B94D3F200A0F11A /* MenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0C52B94D3F200A0F11A /* MenuBar.swift */; };
 B2E5D0B42B94D2C900A0F11A /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B32B94D2C900A0F11A /* Recorder.swift */; };
 B2E5D0B62B94D2C900A0F11A /* Replayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B52B94D2C900A0F11A /* Replayer.swift */; };
 /* End PBXBuildFile section */
@@ -15,7 +17,10 @@ B2E5D0B62B94D2C900A0F11A /* Replayer.swift in Sources */ = {isa = PBXBuildFile; 
 /* Begin PBXFileReference section */
 B2E5D0AA2B94D2C900A0F11A /* MacroRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacroRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 B2E5D0AF2B94D2C900A0F11A /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
-B2E5D0B12B94D2C900A0F11A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+B2E5D0C12B94D3F200A0F11A /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+B2E5D0C32B94D3F200A0F11A /* MacroManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroManager.swift; sourceTree = "<group>"; };
+B2E5D0C52B94D3F200A0F11A /* MenuBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBar.swift; sourceTree = "<group>"; };
+B2E5D0C72B94D3F200A0F11A /* MacroRecorder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacroRecorder.entitlements; sourceTree = "<group>"; };
 B2E5D0B32B94D2C900A0F11A /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
 B2E5D0B52B94D2C900A0F11A /* Replayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Replayer.swift; sourceTree = "<group>"; };
 B2E5D0B82B94D2C900A0F11A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -41,11 +46,14 @@ sourceTree = "<group>";
 B2E5D0AE2B94D2C900A0F11A /* MacroRecorder */ = {
 isa = PBXGroup;
 children = (
-B2E5D0AF2B94D2C900A0F11A /* App.swift */,
-B2E5D0B12B94D2C900A0F11A /* ContentView.swift */,
+            B2E5D0AF2B94D2C900A0F11A /* App.swift */,
+            B2E5D0C12B94D3F200A0F11A /* MainView.swift */,
+            B2E5D0C32B94D3F200A0F11A /* MacroManager.swift */,
+            B2E5D0C52B94D3F200A0F11A /* MenuBar.swift */,
             B2E5D0B32B94D2C900A0F11A /* Recorder.swift */,
             B2E5D0B52B94D2C900A0F11A /* Replayer.swift */,
-B2E5D0B82B94D2C900A0F11A /* Info.plist */,
+            B2E5D0B82B94D2C900A0F11A /* Info.plist */,
+            B2E5D0C72B94D3F200A0F11A /* MacroRecorder.entitlements */,
 );
 path = MacroRecorder;
 sourceTree = "<group>";
@@ -129,8 +137,10 @@ buildActionMask = 2147483647;
 files = (
             B2E5D0B62B94D2C900A0F11A /* Replayer.swift in Sources */,
             B2E5D0B42B94D2C900A0F11A /* Recorder.swift in Sources */,
-B2E5D0B22B94D2C900A0F11A /* ContentView.swift in Sources */,
-B2E5D0B02B94D2C900A0F11A /* App.swift in Sources */,
+            B2E5D0C62B94D3F200A0F11A /* MenuBar.swift in Sources */,
+            B2E5D0C42B94D3F200A0F11A /* MacroManager.swift in Sources */,
+            B2E5D0C22B94D3F200A0F11A /* MainView.swift in Sources */,
+            B2E5D0B02B94D2C900A0F11A /* App.swift in Sources */,
 );
 runOnlyForDeploymentPostprocessing = 0;
 };
@@ -163,7 +173,8 @@ CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 CLANG_WARN_STRICT_PROTOTYPES = YES;
 CLANG_WARN_SUSPICIOUS_MOVE = YES;
-CODE_SIGN_IDENTITY = "-";
+                CODE_SIGN_ENTITLEMENTS = MacroRecorder/MacroRecorder.entitlements;
+                CODE_SIGN_IDENTITY = "-";
 CODE_SIGN_STYLE = Automatic;
 COMBINE_HIDPI_IMAGES = YES;
 CURRENT_PROJECT_VERSION = 1;
@@ -210,7 +221,8 @@ CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 CLANG_WARN_STRICT_PROTOTYPES = YES;
 CLANG_WARN_SUSPICIOUS_MOVE = YES;
-CODE_SIGN_IDENTITY = "-";
+                CODE_SIGN_ENTITLEMENTS = MacroRecorder/MacroRecorder.entitlements;
+                CODE_SIGN_IDENTITY = "-";
 CODE_SIGN_STYLE = Automatic;
 COMBINE_HIDPI_IMAGES = YES;
 CURRENT_PROJECT_VERSION = 1;

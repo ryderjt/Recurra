@@ -3,20 +3,6 @@ import Combine
 import ApplicationServices
 import Carbon.HIToolbox
 
-/// Represents a recorded macro consisting of time-aware CGEvents.
-struct RecordedMacro: Identifiable {
-    struct TimedEvent {
-        let delay: TimeInterval
-        let event: CGEvent
-    }
-
-    let id: UUID
-    var name: String
-    let createdAt: Date
-    let events: [TimedEvent]
-    let duration: TimeInterval
-}
-
 /// Centralised helper that wraps Carbon hot-key registration so it can be shared
 /// between recording and playback components.
 final class HotKeyCenter {
@@ -128,12 +114,12 @@ final class Recorder: ObservableObject {
     }
 
     @Published private(set) var status: Status = .idle
-    @Published private(set) var macros: [RecordedMacro] = []
     @Published var nextMacroName: String
 
     var isRecording: Bool { status == .recording }
     var isReplaying: Bool { status == .replaying }
 
+    private let macroManager: MacroManager
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
     private var currentRecording: [RecordedMacro.TimedEvent] = []
@@ -144,7 +130,8 @@ final class Recorder: ObservableObject {
     private var hotKeyIdentifier: UInt32 = 0
     private var recordingCount = 1
 
-    init() {
+    init(macroManager: MacroManager) {
+        self.macroManager = macroManager
         nextMacroName = Recorder.defaultName(for: 1)
         registerHotKey()
     }
@@ -229,14 +216,15 @@ final class Recorder: ObservableObject {
         let name = currentRecordingName
         let duration = totalRecordingDuration
 
+        let macro: RecordedMacro? = events.isEmpty ? nil : RecordedMacro(id: UUID(),
+                                                                         name: name,
+                                                                         createdAt: Date(),
+                                                                         events: events,
+                                                                         duration: duration)
+
         DispatchQueue.main.async {
-            if !events.isEmpty {
-                let macro = RecordedMacro(id: UUID(),
-                                          name: name,
-                                          createdAt: Date(),
-                                          events: events,
-                                          duration: duration)
-                self.macros.insert(macro, at: 0)
+            if let macro {
+                self.macroManager.add(macro)
                 self.recordingCount += 1
                 self.nextMacroName = Recorder.defaultName(for: self.recordingCount)
             }
@@ -264,23 +252,6 @@ final class Recorder: ObservableObject {
         DispatchQueue.main.async {
             self.status = .permissionDenied
         }
-    }
-
-    func removeMacros(at offsets: IndexSet) {
-        macros.remove(atOffsets: offsets)
-    }
-
-    func removeMacro(_ macro: RecordedMacro) {
-        macros.removeAll { $0.id == macro.id }
-    }
-
-    func updateName(of macro: RecordedMacro, to newName: String) {
-        guard let index = macros.firstIndex(where: { $0.id == macro.id }) else { return }
-        macros[index].name = newName
-    }
-
-    var mostRecentMacro: RecordedMacro? {
-        macros.first
     }
 
     private func ensureAccessibilityPermission() -> Bool {
