@@ -124,7 +124,7 @@ final class MenuBarController: NSObject, ObservableObject {
         NSApp.activate(ignoringOtherApps: true)
         let visibleWindows = NSApp.windows.filter { $0.isVisible && $0.canBecomeKey }
         if visibleWindows.isEmpty {
-            NSApp.sendAction(#selector(NSApplication.showAllWindows), to: nil, from: nil)
+            NSApp.unhide(nil)
         }
         let windowsToShow = visibleWindows.isEmpty ? NSApp.windows : visibleWindows
         for window in windowsToShow where window.canBecomeKey {
