@@ -120,16 +120,19 @@ final class MenuBarController: NSObject, ObservableObject {
         replayer.togglePlayback()
     }
 
-    @objc private func openMainWindow() {
+    private func showMainWindow() {
         NSApp.activate(ignoringOtherApps: true)
-        let visibleWindows = NSApp.windows.filter { $0.isVisible && $0.canBecomeKey }
-        if visibleWindows.isEmpty {
-            NSApp.sendAction(#selector(NSApplication.showAllWindows), to: nil, from: nil)
-        }
-        let windowsToShow = visibleWindows.isEmpty ? NSApp.windows : visibleWindows
-        for window in windowsToShow where window.canBecomeKey {
+
+        guard let mainWindow = NSApp.windows.first(where: { $0.canBecomeKey }) else { return }
+        mainWindow.makeKeyAndOrderFront(nil)
+
+        for window in NSApp.windows where window !== mainWindow && window.canBecomeKey {
             window.makeKeyAndOrderFront(nil)
         }
+    }
+
+    @objc private func openMainWindow() {
+        showMainWindow()
     }
 
     @objc private func quitApp() {
