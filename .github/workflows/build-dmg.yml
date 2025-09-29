@@ -15,6 +15,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Release configuration
+        working-directory: Recurra
         run: |
           set -euo pipefail
           xcodebuild \
@@ -25,6 +26,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       - name: Create Recurra.dmg
+        working-directory: Recurra
         run: |
           set -euo pipefail
           APP_PATH="build/Build/Products/Release/Recurra.app"
@@ -49,5 +51,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Recurra.dmg
-          path: Recurra.dmg
+          path: Recurra/Recurra.dmg
           if-no-files-found: error
