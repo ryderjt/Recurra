@@ -58,9 +58,8 @@ struct MainView: View {
 
             List(selection: $selectedMacroID) {
                 if macroManager.macros.isEmpty {
-                    ContentUnavailableView("No recordings yet",
-                                           systemImage: "square.and.pencil",
-                                           description: Text("Record a macro to see it listed here."))
+                    EmptyMacroPlaceholder()
+                        .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
                 } else {
                     ForEach(macroManager.macros) { macro in
@@ -220,6 +219,33 @@ struct MainView: View {
 }
 
 // MARK: - Subviews
+
+private struct EmptyMacroPlaceholder: View {
+    var body: some View {
+        Group {
+            if #available(macOS 14.0, *) {
+                ContentUnavailableView("No recordings yet",
+                                       systemImage: "square.and.pencil",
+                                       description: Text("Record a macro to see it listed here."))
+            } else {
+                VStack(spacing: 8) {
+                    Image(systemName: "square.and.pencil")
+                        .font(.system(size: 36, weight: .regular))
+                        .foregroundStyle(.secondary)
+                    Text("No recordings yet")
+                        .font(.title3.weight(.semibold))
+                    Text("Record a macro to see it listed here.")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 220)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 36)
+            }
+        }
+    }
+}
 
 private struct MacroRow: View {
     let macro: RecordedMacro

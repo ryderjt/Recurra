@@ -148,7 +148,7 @@ final class Recorder: ObservableObject {
 
     func startRecording() {
         guard !isRecording, !isReplaying else { return }
-        guard ensureAccessibilityPermission() else {
+        guard AccessibilityPermission.ensureTrusted() else {
             DispatchQueue.main.async {
                 self.status = .permissionDenied
             }
@@ -253,14 +253,6 @@ final class Recorder: ObservableObject {
         DispatchQueue.main.async {
             self.status = .permissionDenied
         }
-    }
-
-    private func ensureAccessibilityPermission() -> Bool {
-        if AXIsProcessTrusted() {
-            return true
-        }
-        let prompt: CFDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as String: true] as CFDictionary
-        return AXIsProcessTrustedWithOptions(prompt)
     }
 
     private func handleIncoming(event: CGEvent, type: CGEventType) -> Unmanaged<CGEvent> {

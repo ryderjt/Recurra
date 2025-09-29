@@ -23,16 +23,11 @@ final class Replayer: ObservableObject {
         HotKeyCenter.shared.unregister(identifier: playbackHotKey)
     }
 
-    func attach(recorder: Recorder) {
-        self.recorder = recorder
-    }
-
     func replay(_ macro: RecordedMacro) {
         guard !isReplaying else { return }
         guard recorder?.isRecording == false else { return }
         guard !macro.events.isEmpty else { return }
-        let prompt: CFDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as String: true] as CFDictionary
-        guard AXIsProcessTrusted() || AXIsProcessTrustedWithOptions(prompt) else {
+        guard AccessibilityPermission.ensureTrusted() else {
             recorder?.markPermissionDenied()
             return
         }
