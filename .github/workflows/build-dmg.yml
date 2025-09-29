@@ -1,0 +1,53 @@
+name: Build Recurra DMG
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+  pull_request:
+
+jobs:
+  build-dmg:
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build Release configuration
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -project Recurra.xcodeproj \
+            -scheme Recurra \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Create Recurra.dmg
+        run: |
+          set -euo pipefail
+          APP_PATH="build/Build/Products/Release/Recurra.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "Expected app bundle not found at $APP_PATH" >&2
+            exit 1
+          fi
+
+          STAGING_DIR="dmg-staging"
+          rm -rf "$STAGING_DIR"
+          mkdir -p "$STAGING_DIR"
+          cp -R "$APP_PATH" "$STAGING_DIR/"
+
+          hdiutil create \
+            -volname "Recurra" \
+            -srcfolder "$STAGING_DIR" \
+            -ov \
+            -format UDZO \
+            Recurra.dmg
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Recurra.dmg
+          path: Recurra.dmg
+          if-no-files-found: error
