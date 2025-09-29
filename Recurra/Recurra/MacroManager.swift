@@ -73,3 +73,13 @@ final class MacroManager: ObservableObject {
         return macros.first(where: { $0.id == id })
     }
 }
+
+private extension Array where Element == RecordedMacro {
+    mutating func remove(atOffsets offsets: IndexSet) {
+        for offset in offsets.sorted(by: >) {
+            if indices.contains(offset) {
+                remove(at: offset)
+            }
+        }
+    }
+}
