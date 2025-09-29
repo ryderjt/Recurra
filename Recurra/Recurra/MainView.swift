@@ -58,9 +58,7 @@ struct MainView: View {
 
             List(selection: $selectedMacroID) {
                 if macroManager.macros.isEmpty {
-                    ContentUnavailableView("No recordings yet",
-                                           systemImage: "square.and.pencil",
-                                           description: Text("Record a macro to see it listed here."))
+                    EmptyMacrosPlaceholder()
                         .listRowBackground(Color.clear)
                 } else {
                     ForEach(macroManager.macros) { macro in
@@ -344,6 +342,25 @@ private struct MacroDetailCard: View {
         formatter.allowedUnits = seconds > 60 ? [.minute, .second] : [.second]
         formatter.unitsStyle = .short
         return formatter.string(from: seconds) ?? "--"
+    }
+}
+
+private struct EmptyMacrosPlaceholder: View {
+    var body: some View {
+        VStack(spacing: 12) {
+            Image(systemName: "square.and.pencil")
+                .font(.system(size: 42, weight: .light))
+                .foregroundStyle(.secondary)
+            VStack(spacing: 4) {
+                Text("No recordings yet")
+                    .font(.headline)
+                Text("Record a macro to see it listed here.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .center)
+        .padding(.vertical, 40)
     }
 }
 
