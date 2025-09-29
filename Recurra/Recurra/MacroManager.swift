@@ -2,8 +2,15 @@ import Foundation
 import Combine
 import ApplicationServices
 
-struct RecordedMacro: Identifiable {
-    struct TimedEvent {
+// CGEvent is thread-safe for posting across queues, but it does not conform to
+// Sendable by default. The DMG workflow builds with Swift's strict concurrency
+// checks enabled, which requires types captured in @Sendable closures to
+// conform to Sendable. We adopt an unchecked conformance so recorded events can
+// be replayed from background queues without tripping the compiler.
+extension CGEvent: @unchecked Sendable {}
+
+struct RecordedMacro: Identifiable, Sendable {
+    struct TimedEvent: Sendable {
         let delay: TimeInterval
         let event: CGEvent
     }
