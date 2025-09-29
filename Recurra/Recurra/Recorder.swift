@@ -36,7 +36,7 @@ final class HotKeyCenter {
         nextIdentifier += 1
 
         var hotKeyRef: EventHotKeyRef?
-        var hotKeyID = EventHotKeyID(signature: OSType("MCRO".fourCharCodeValue), id: identifier)
+        let hotKeyID = EventHotKeyID(signature: OSType("MCRO".fourCharCodeValue), id: identifier)
         let status = RegisterEventHotKey(keyCode, modifiers, hotKeyID,
                                          GetApplicationEventTarget(), 0, &hotKeyRef)
 
