@@ -66,12 +66,29 @@ Recurra/
 | ⏳ | Timeline editor to tweak delays |
 | ⏳ | Sharing/export support |
 
-## Packaging & Notarization Notes
+## Automated Release Workflow
 
-1. Archive the app in Xcode (`Product > Archive`) with a Developer ID signing certificate.
-2. Export the signed `.app` bundle and wrap it in a `.dmg` using `create-dmg` or `hdiutil`.
-3. Run `xcrun notarytool submit <dmg> --keychain-profile <profile> --wait` to notarize.
-4. Staple the ticket (`xcrun stapler staple <dmg>`) before distribution so Gatekeeper validates offline.
+Tagged pushes trigger the **Build macOS Release** workflow (`.github/workflows/build.yml`) which:
+
+1. Archives the `Recurra` scheme with `xcodebuild` into `build/Recurra.xcarchive`.
+2. Exports a manually signed `.app` bundle using `exportOptions.plist` (Developer ID distribution).
+3. Optionally notarizes the exported app with `notarytool` when Apple account secrets are available.
+4. Packages the signed app into `build/Recurra.dmg` using [`create-dmg`](https://github.com/create-dmg/create-dmg).
+5. Uploads the DMG as a build artifact for the release tag.
+
+### Required GitHub Secrets
+
+| Secret | Description |
+| ------ | ----------- |
+| `TEAM_ID` | Your Apple Developer Team ID (used for signing and notarization). |
+| `DEVELOPER_ID_CERTIFICATE_BASE64` | Base64-encoded `.p12` Developer ID Application certificate. |
+| `DEVELOPER_ID_CERTIFICATE_PASSWORD` | Password protecting the exported `.p12` file. |
+| `DEVELOPER_ID_IDENTITY` | Full signing identity string (e.g. `Developer ID Application: Example Corp (ABCDE12345)`). |
+| `KEYCHAIN_PASSWORD` | Temporary password used to create the signing keychain on the runner. |
+| `APPLE_ID` *(optional)* | Apple ID email for notarization with `notarytool`. |
+| `APP_PASSWORD` *(optional)* | App-specific password associated with `APPLE_ID` for notarization. |
+
+> ℹ️ The `exportOptions.plist` shipped in the repository contains a placeholder team identifier. The workflow automatically overwrites it with `TEAM_ID` before exporting the archive.
 
 ## License
 
