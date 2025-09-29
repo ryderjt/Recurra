@@ -8,16 +8,16 @@ objects = {
 /* Begin PBXBuildFile section */
 B2E5D0B02B94D2C900A0F11A /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0AF2B94D2C900A0F11A /* App.swift */; };
 B2E5D0B22B94D2C900A0F11A /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B12B94D2C900A0F11A /* ContentView.swift */; };
-B2E5D0B42B94D2C900A0F11A /* RecordManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B32B94D2C900A0F11A /* RecordManager.swift */; };
-B2E5D0B62B94D2C900A0F11A /* ReplayManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B52B94D2C900A0F11A /* ReplayManager.swift */; };
+B2E5D0B42B94D2C900A0F11A /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B32B94D2C900A0F11A /* Recorder.swift */; };
+B2E5D0B62B94D2C900A0F11A /* Replayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B52B94D2C900A0F11A /* Replayer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 B2E5D0AA2B94D2C900A0F11A /* MacroRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacroRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
 B2E5D0AF2B94D2C900A0F11A /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 B2E5D0B12B94D2C900A0F11A /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-B2E5D0B32B94D2C900A0F11A /* RecordManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordManager.swift; sourceTree = "<group>"; };
-B2E5D0B52B94D2C900A0F11A /* ReplayManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReplayManager.swift; sourceTree = "<group>"; };
+B2E5D0B32B94D2C900A0F11A /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
+B2E5D0B52B94D2C900A0F11A /* Replayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Replayer.swift; sourceTree = "<group>"; };
 B2E5D0B82B94D2C900A0F11A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -43,8 +43,8 @@ isa = PBXGroup;
 children = (
 B2E5D0AF2B94D2C900A0F11A /* App.swift */,
 B2E5D0B12B94D2C900A0F11A /* ContentView.swift */,
-B2E5D0B32B94D2C900A0F11A /* RecordManager.swift */,
-B2E5D0B52B94D2C900A0F11A /* ReplayManager.swift */,
+            B2E5D0B32B94D2C900A0F11A /* Recorder.swift */,
+            B2E5D0B52B94D2C900A0F11A /* Replayer.swift */,
 B2E5D0B82B94D2C900A0F11A /* Info.plist */,
 );
 path = MacroRecorder;
@@ -127,8 +127,8 @@ B2E5D0A62B94D2C900A0F11A /* Sources */ = {
 isa = PBXSourcesBuildPhase;
 buildActionMask = 2147483647;
 files = (
-B2E5D0B62B94D2C900A0F11A /* ReplayManager.swift in Sources */,
-B2E5D0B42B94D2C900A0F11A /* RecordManager.swift in Sources */,
+            B2E5D0B62B94D2C900A0F11A /* Replayer.swift in Sources */,
+            B2E5D0B42B94D2C900A0F11A /* Recorder.swift in Sources */,
 B2E5D0B22B94D2C900A0F11A /* ContentView.swift in Sources */,
 B2E5D0B02B94D2C900A0F11A /* App.swift in Sources */,
 );
