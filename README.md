@@ -1,4 +1,4 @@
-# MacroRecorder
+# Recurra
 
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![License](https://img.shields.io/badge/license-GPLv3-blue)
@@ -19,13 +19,13 @@ A lightweight SwiftUI macro recorder for macOS that captures keyboard and mouse 
 ## Project Structure
 
 ```
-MacroRecorder/
-├─ MacroRecorder.xcodeproj/
-├─ MacroRecorder/
+Recurra/
+├─ Recurra.xcodeproj/
+├─ Recurra/
 │  ├─ App.swift                 # SwiftUI entry point + command/menu integration
 │  ├─ Info.plist                # Usage descriptions for Accessibility prompts
 │  ├─ MacroManager.swift        # Macro library storage and rename/delete helpers
-│  ├─ MacroRecorder.entitlements# Sandbox and Accessibility entitlements
+│  ├─ Recurra.entitlements      # Sandbox and Accessibility entitlements
 │  ├─ MainView.swift            # Gradient SwiftUI interface
 │  ├─ MenuBar.swift             # NSStatusItem-backed menu bar controller
 │  ├─ Recorder.swift            # CGEventTap recorder with timing metadata
@@ -38,15 +38,15 @@ MacroRecorder/
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-organization/MacroRecorder.git
-   cd MacroRecorder/MacroRecorder
+   git clone https://github.com/your-organization/Recurra.git
+   cd Recurra/Recurra
    ```
 2. **Open the project**
    ```bash
-   open MacroRecorder.xcodeproj
+   open Recurra.xcodeproj
    ```
 3. **Configure signing** – set your development team and bundle identifier.
-4. **Review entitlements** – confirm `MacroRecorder.entitlements` is attached to the target so macOS can prompt for Accessibility and input monitoring.
+4. **Review entitlements** – confirm `Recurra.entitlements` is attached to the target so macOS can prompt for Accessibility and input monitoring.
 5. **Build & run** – launch the app, approve the Accessibility prompt, and try recording a quick macro.
 
 ## Known Limitations
@@ -75,4 +75,4 @@ MacroRecorder/
 
 ## License
 
-MacroRecorder is released under the [GNU General Public License v3.0](./LICENSE).
+Recurra is released under the [GNU General Public License v3.0](./LICENSE).

@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct MacroRecorderApp: App {
+struct RecurraApp: App {
     @StateObject private var macroManager: MacroManager
     @StateObject private var recorder: Recorder
     @StateObject private var replayer: Replayer

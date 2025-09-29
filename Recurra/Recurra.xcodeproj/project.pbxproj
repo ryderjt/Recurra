@@ -15,12 +15,12 @@ B2E5D0B62B94D2C900A0F11A /* Replayer.swift in Sources */ = {isa = PBXBuildFile; 
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-B2E5D0AA2B94D2C900A0F11A /* MacroRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MacroRecorder.app; sourceTree = BUILT_PRODUCTS_DIR; };
+B2E5D0AA2B94D2C900A0F11A /* Recurra.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Recurra.app; sourceTree = BUILT_PRODUCTS_DIR; };
 B2E5D0AF2B94D2C900A0F11A /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
 B2E5D0C12B94D3F200A0F11A /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 B2E5D0C32B94D3F200A0F11A /* MacroManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacroManager.swift; sourceTree = "<group>"; };
 B2E5D0C52B94D3F200A0F11A /* MenuBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBar.swift; sourceTree = "<group>"; };
-B2E5D0C72B94D3F200A0F11A /* MacroRecorder.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacroRecorder.entitlements; sourceTree = "<group>"; };
+B2E5D0C72B94D3F200A0F11A /* Recurra.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Recurra.entitlements; sourceTree = "<group>"; };
 B2E5D0B32B94D2C900A0F11A /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
 B2E5D0B52B94D2C900A0F11A /* Replayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Replayer.swift; sourceTree = "<group>"; };
 B2E5D0B82B94D2C900A0F11A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -30,7 +30,7 @@ B2E5D0B82B94D2C900A0F11A /* Info.plist */ = {isa = PBXFileReference; lastKnownFi
 B2E5D0A42B94D2C900A0F11A = {
 isa = PBXGroup;
 children = (
-B2E5D0AE2B94D2C900A0F11A /* MacroRecorder */,
+B2E5D0AE2B94D2C900A0F11A /* Recurra */,
 B2E5D0AB2B94D2C900A0F11A /* Products */,
 );
 sourceTree = "<group>";
@@ -38,12 +38,12 @@ sourceTree = "<group>";
 B2E5D0AB2B94D2C900A0F11A /* Products */ = {
 isa = PBXGroup;
 children = (
-B2E5D0AA2B94D2C900A0F11A /* MacroRecorder.app */,
+B2E5D0AA2B94D2C900A0F11A /* Recurra.app */,
 );
 name = Products;
 sourceTree = "<group>";
 };
-B2E5D0AE2B94D2C900A0F11A /* MacroRecorder */ = {
+B2E5D0AE2B94D2C900A0F11A /* Recurra */ = {
 isa = PBXGroup;
 children = (
             B2E5D0AF2B94D2C900A0F11A /* App.swift */,
@@ -53,17 +53,17 @@ children = (
             B2E5D0B32B94D2C900A0F11A /* Recorder.swift */,
             B2E5D0B52B94D2C900A0F11A /* Replayer.swift */,
             B2E5D0B82B94D2C900A0F11A /* Info.plist */,
-            B2E5D0C72B94D3F200A0F11A /* MacroRecorder.entitlements */,
+            B2E5D0C72B94D3F200A0F11A /* Recurra.entitlements */,
 );
-path = MacroRecorder;
+path = Recurra;
 sourceTree = "<group>";
 };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-B2E5D0A92B94D2C900A0F11A /* MacroRecorder */ = {
+B2E5D0A92B94D2C900A0F11A /* Recurra */ = {
 isa = PBXNativeTarget;
-buildConfigurationList = B2E5D0BD2B94D2C900A0F11A /* Build configuration list for PBXNativeTarget "MacroRecorder" */;
+buildConfigurationList = B2E5D0BD2B94D2C900A0F11A /* Build configuration list for PBXNativeTarget "Recurra" */;
 buildPhases = (
 B2E5D0A62B94D2C900A0F11A /* Sources */,
 B2E5D0A72B94D2C900A0F11A /* Frameworks */,
@@ -73,9 +73,9 @@ buildRules = (
 );
 dependencies = (
 );
-name = MacroRecorder;
-productName = MacroRecorder;
-productReference = B2E5D0AA2B94D2C900A0F11A /* MacroRecorder.app */;
+name = Recurra;
+productName = Recurra;
+productReference = B2E5D0AA2B94D2C900A0F11A /* Recurra.app */;
 productType = "com.apple.product-type.application";
 };
 /* End PBXNativeTarget section */
@@ -93,7 +93,7 @@ CreatedOnToolsVersion = 15.0;
 };
 };
 };
-buildConfigurationList = B2E5D0A82B94D2C900A0F11B /* Build configuration list for PBXProject "MacroRecorder" */;
+buildConfigurationList = B2E5D0A82B94D2C900A0F11B /* Build configuration list for PBXProject "Recurra" */;
 compatibilityVersion = "Xcode 15.0";
 developmentRegion = en;
 hasScannedForEncodings = 0;
@@ -105,7 +105,7 @@ productRefGroup = B2E5D0AB2B94D2C900A0F11A /* Products */;
 projectDirPath = "";
 projectRoot = "";
 targets = (
-B2E5D0A92B94D2C900A0F11A /* MacroRecorder */,
+B2E5D0A92B94D2C900A0F11A /* Recurra */,
 );
 };
 /* End PBXProject section */
@@ -173,7 +173,7 @@ CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 CLANG_WARN_STRICT_PROTOTYPES = YES;
 CLANG_WARN_SUSPICIOUS_MOVE = YES;
-                CODE_SIGN_ENTITLEMENTS = MacroRecorder/MacroRecorder.entitlements;
+                CODE_SIGN_ENTITLEMENTS = Recurra/Recurra.entitlements;
                 CODE_SIGN_IDENTITY = "-";
 CODE_SIGN_STYLE = Automatic;
 COMBINE_HIDPI_IMAGES = YES;
@@ -181,11 +181,11 @@ CURRENT_PROJECT_VERSION = 1;
 DEVELOPMENT_TEAM = "";
 ENABLE_HARDENED_RUNTIME = YES;
 GCC_C_LANGUAGE_STANDARD = gnu11;
-INFOPLIST_FILE = MacroRecorder/Info.plist;
+INFOPLIST_FILE = Recurra/Info.plist;
 LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 MACOSX_DEPLOYMENT_TARGET = 13.0;
 MARKETING_VERSION = 1.0;
-PRODUCT_BUNDLE_IDENTIFIER = com.example.MacroRecorder;
+PRODUCT_BUNDLE_IDENTIFIER = com.example.Recurra;
 PRODUCT_NAME = "$(TARGET_NAME)";
 SDKROOT = macosx;
 SUPPORTED_PLATFORMS = "macosx";
@@ -221,7 +221,7 @@ CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 CLANG_WARN_STRICT_PROTOTYPES = YES;
 CLANG_WARN_SUSPICIOUS_MOVE = YES;
-                CODE_SIGN_ENTITLEMENTS = MacroRecorder/MacroRecorder.entitlements;
+                CODE_SIGN_ENTITLEMENTS = Recurra/Recurra.entitlements;
                 CODE_SIGN_IDENTITY = "-";
 CODE_SIGN_STYLE = Automatic;
 COMBINE_HIDPI_IMAGES = YES;
@@ -229,11 +229,11 @@ CURRENT_PROJECT_VERSION = 1;
 DEVELOPMENT_TEAM = "";
 ENABLE_HARDENED_RUNTIME = YES;
 GCC_C_LANGUAGE_STANDARD = gnu11;
-INFOPLIST_FILE = MacroRecorder/Info.plist;
+INFOPLIST_FILE = Recurra/Info.plist;
 LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 MACOSX_DEPLOYMENT_TARGET = 13.0;
 MARKETING_VERSION = 1.0;
-PRODUCT_BUNDLE_IDENTIFIER = com.example.MacroRecorder;
+PRODUCT_BUNDLE_IDENTIFIER = com.example.Recurra;
 PRODUCT_NAME = "$(TARGET_NAME)";
 SDKROOT = macosx;
 SUPPORTED_PLATFORMS = "macosx";
@@ -258,7 +258,7 @@ name = Release;
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-B2E5D0A82B94D2C900A0F11B /* Build configuration list for PBXProject "MacroRecorder" */ = {
+B2E5D0A82B94D2C900A0F11B /* Build configuration list for PBXProject "Recurra" */ = {
 isa = XCConfigurationList;
 buildConfigurations = (
 B2E5D0BE2B94D2C900A0F11A /* Debug */,
@@ -267,7 +267,7 @@ B2E5D0BF2B94D2C900A0F11A /* Release */,
 defaultConfigurationIsVisible = 0;
 defaultConfigurationName = Release;
 };
-B2E5D0BD2B94D2C900A0F11A /* Build configuration list for PBXNativeTarget "MacroRecorder" */ = {
+B2E5D0BD2B94D2C900A0F11A /* Build configuration list for PBXNativeTarget "Recurra" */ = {
 isa = XCConfigurationList;
 buildConfigurations = (
 B2E5D0BA2B94D2C900A0F11A /* Debug */,
