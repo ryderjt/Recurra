@@ -1,0 +1,52 @@
+name: Build macOS DMG
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-13
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Release .app bundle
+        run: |
+          set -eo pipefail
+          xcodebuild \
+            -project Recurra/Recurra.xcodeproj \
+            -scheme Recurra \
+            -configuration Release \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY=""
+        env:
+          NSUnbufferedIO: "YES"
+
+      - name: Prepare DMG contents
+        run: |
+          set -euo pipefail
+          APP_PATH="build/Build/Products/Release/Recurra.app"
+          test -d "${APP_PATH}" || { echo "App not found at ${APP_PATH}" >&2; exit 1; }
+          mkdir -p dist/Recurra
+          cp -R "${APP_PATH}" dist/Recurra/
+
+      - name: Create DMG
+        run: |
+          set -euo pipefail
+          hdiutil create \
+            -volname "Recurra" \
+            -srcfolder dist/Recurra \
+            -ov \
+            -format UDZO \
+            dist/Recurra.dmg
+
+      - name: Upload DMG artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Recurra-dmg
+          path: dist/Recurra.dmg
+          if-no-files-found: error
