@@ -85,6 +85,34 @@ final class MacroManager: ObservableObject {
         executeOnMain(update)
     }
 
+    func update(_ macro: RecordedMacro) {
+        let update = {
+            guard let index = self.macros.firstIndex(where: { $0.id == macro.id }) else { return }
+            self.macros[index] = macro
+            self.persistCurrentState()
+        }
+
+        executeOnMain(update)
+    }
+
+    @discardableResult
+    func createCustomMacro(named name: String? = nil) -> RecordedMacro {
+        let resolvedName: String
+        if let name, !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            resolvedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        } else {
+            resolvedName = nextCustomMacroName()
+        }
+
+        let macro = RecordedMacro(id: UUID(),
+                                  name: resolvedName,
+                                  createdAt: Date(),
+                                  events: [],
+                                  duration: 0)
+        add(macro)
+        return macro
+    }
+
     func macro(with id: RecordedMacro.ID?) -> RecordedMacro? {
         guard let id else { return nil }
         return macros.first(where: { $0.id == id })
@@ -96,6 +124,11 @@ final class MacroManager: ObservableObject {
         } else {
             DispatchQueue.main.async(execute: block)
         }
+    }
+
+    private func nextCustomMacroName() -> String {
+        let existing = macros.filter { $0.name.hasPrefix("Custom Macro") }.count + 1
+        return "Custom Macro #\(existing)"
     }
 
     private func loadPersistedMacros() {
@@ -188,7 +221,7 @@ private struct StoredMacro: Codable {
     }
 }
 
-private extension CGEvent {
+extension CGEvent {
     func archivedData() -> Data? {
         guard let cfData = self.data else { return nil }
         return cfData as Data

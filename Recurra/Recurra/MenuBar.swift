@@ -3,6 +3,10 @@ import Combine
 
 final class MenuBarController: NSObject, ObservableObject {
     private let statusItem: NSStatusItem
+    private lazy var idleStatusIcon: NSImage? = {
+        guard let image = Bundle.main.image(forResource: "StatusBarIcon") else { return nil }
+        return image.tinted(with: .white)
+    }()
     private let recorder: Recorder
     private let replayer: Replayer
     private let macroManager: MacroManager
@@ -55,9 +59,9 @@ final class MenuBarController: NSObject, ObservableObject {
 
     private func configureStatusItem() {
         guard let button = statusItem.button else { return }
-        button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "Macro Recorder")
+        applyIdleIcon(to: button)
         button.imagePosition = .imageOnly
-        button.contentTintColor = NSColor.controlAccentColor
+        button.contentTintColor = nil
     }
 
     private func rebuildMenu() {
@@ -96,7 +100,8 @@ final class MenuBarController: NSObject, ObservableObject {
         guard let button = statusItem.button else { return }
         switch recorder.status {
         case .idle:
-            button.contentTintColor = NSColor.controlAccentColor
+            button.contentTintColor = nil
+            applyIdleIcon(to: button)
         case .recording:
             button.contentTintColor = NSColor.systemRed
             button.image = NSImage(systemSymbolName: "record.circle.fill", accessibilityDescription: "Recording")
@@ -104,13 +109,20 @@ final class MenuBarController: NSObject, ObservableObject {
             button.contentTintColor = NSColor.systemBlue
             button.image = NSImage(systemSymbolName: "play.circle.fill", accessibilityDescription: "Replaying")
         case .permissionDenied:
-            button.contentTintColor = NSColor.systemOrange
-            button.image = NSImage(systemSymbolName: "exclamationmark.triangle", accessibilityDescription: "Permission Required")
-        }
-        if recorder.status == .idle {
-            button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "Macro Recorder")
+            button.contentTintColor = nil
+            applyIdleIcon(to: button)
         }
     }
+
+    private func applyIdleIcon(to button: NSStatusBarButton) {
+        if let icon = idleStatusIcon {
+            button.image = icon
+        } else {
+            button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "Macro Recorder")
+        }
+        button.image?.isTemplate = false
+    }
+
 
     @objc private func toggleRecording() {
         recorder.toggleRecording()
@@ -134,5 +146,18 @@ final class MenuBarController: NSObject, ObservableObject {
 
     @objc private func quitApp() {
         NSApp.terminate(nil)
+    }
+}
+
+private extension NSImage {
+    func tinted(with color: NSColor) -> NSImage {
+        guard let tintedImage = self.copy() as? NSImage else { return self }
+        tintedImage.lockFocus()
+        let rect = NSRect(origin: .zero, size: size)
+        color.set()
+        rect.fill(using: .sourceAtop)
+        tintedImage.unlockFocus()
+        tintedImage.isTemplate = false
+        return tintedImage
     }
 }
