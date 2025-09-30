@@ -4,7 +4,7 @@
 
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange?style=for-the-badge&logo=swift)](https://swift.org)
 [![macOS](https://img.shields.io/badge/macOS-13.0%2B-lightgrey?style=for-the-badge&logo=apple)](https://www.apple.com/macos)
-[![License](https://img.shields.io/badge/License-GPLv3-blue?style=for-the-badge)](./LICENSE)
+[![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey?style=for-the-badge)](./LICENSE)
 
 *Capture, edit, and replay complex workflows with precision timing*
 
@@ -108,7 +108,14 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ## 📄 License
 
-Recurra is released under the [GNU General Public License v3.0](./LICENSE).
+Recurra is released under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](./LICENSE).
+
+**What this means:**
+- ✅ **Learn and study** the code for educational purposes
+- ✅ **Use personally** and modify for your own projects  
+- ✅ **Share** with others for non-commercial purposes
+- ❌ **Cannot sell** or use commercially without permission
+- ❌ **Cannot claim** as your own work
 
 ---
 
