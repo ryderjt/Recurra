@@ -1,10 +1,8 @@
-name: Build Recurra
+name: Build Recurra (Manual)
 
 on:
-  push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
+  # Make this workflow manual-only to avoid duplicate builds
+  # alongside CI on pushes/PRs.
   workflow_dispatch:
 
 jobs:

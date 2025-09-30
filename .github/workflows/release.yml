@@ -11,6 +11,10 @@ on:
         required: true
         default: '1.0.0'
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-release:
     runs-on: macos-latest
