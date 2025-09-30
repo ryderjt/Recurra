@@ -402,6 +402,7 @@ private struct ResizableDivider: View {
     let palette: Palette
     
     @State private var isDragging = false
+    @State private var isHovering = false
     
     var body: some View {
         Rectangle()
@@ -422,6 +423,14 @@ private struct ResizableDivider: View {
                     .opacity(isDragging ? 1 : 0)
                     .animation(.easeInOut(duration: 0.2), value: isDragging)
             )
+            .onHover { hovering in
+                isHovering = hovering
+                if hovering {
+                    NSCursor.resizeLeftRight.set()
+                } else {
+                    NSCursor.arrow.set()
+                }
+            }
             .gesture(
                 DragGesture()
                     .onChanged { value in
