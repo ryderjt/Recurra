@@ -80,7 +80,17 @@ jobs:
       with:
         xcode-version: latest-stable
         
+    - name: Detect test targets
+      id: detect-tests
+      run: |
+        if grep -q 'com.apple.product-type.bundle.unit-test' Recurra/Recurra.xcodeproj/project.pbxproj; then
+          echo "has_tests=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "has_tests=false" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: Run tests
+      if: steps.detect-tests.outputs.has_tests == 'true'
       run: |
         cd Recurra
         xcodebuild test \
@@ -88,14 +98,18 @@ jobs:
           -scheme Recurra \
           -destination "platform=macOS" \
           -resultBundlePath TestResults.xcresult
-          
+
     - name: Upload test results
+      if: steps.detect-tests.outputs.has_tests == 'true' && always()
       uses: actions/upload-artifact@v4
-      if: always()
       with:
         name: test-results
         path: Recurra/TestResults.xcresult
         retention-days: 7
+
+    - name: Skip tests (no test targets)
+      if: steps.detect-tests.outputs.has_tests != 'true'
+      run: echo "No test targets detected; skipping xcodebuild test."
 
   lint:
     runs-on: macos-latest
@@ -116,4 +130,4 @@ jobs:
     - name: Run SwiftLint
       run: |
         cd Recurra/Recurra
-        swiftlint lint --reporter github
+        swiftlint lint --reporter xcode
