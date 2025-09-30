@@ -184,6 +184,10 @@ struct MainView: View {
                             .font(.largeTitle.bold())
                         Text("Capture and replay keyboard and mouse flows with a minimalist workspace.")
                             .foregroundStyle(.secondary)
+                        Text("by ryderjt")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                            .padding(.top, 2)
                     }
                 }
 
@@ -693,6 +697,11 @@ private struct SettingsView: View {
                         dismiss()
                     }
                     .buttonStyle(GradientButtonStyle(isDestructive: false))
+                    
+                    Text("Made with ❤️ by ryderjt")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .padding(.top, 8)
                 }
             }
             .padding(36)

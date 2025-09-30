@@ -87,6 +87,12 @@ final class MenuBarController: NSObject, ObservableObject {
 
         menu.addItem(.separator())
 
+        let aboutItem = NSMenuItem(title: "Made with ❤️ by ryderjt", action: nil, keyEquivalent: "")
+        aboutItem.isEnabled = false
+        menu.addItem(aboutItem)
+
+        menu.addItem(.separator())
+
         let quitItem = NSMenuItem(title: "Quit Macro Recorder", action: #selector(quitApp), keyEquivalent: "q")
         quitItem.keyEquivalentModifierMask = [.command]
         quitItem.target = self
