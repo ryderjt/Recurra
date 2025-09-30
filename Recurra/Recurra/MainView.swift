@@ -30,6 +30,7 @@ struct MainView: View {
     @State private var isShowingPermissionSheet = false
     @State private var isShowingSettings = false
     @State private var permissionMonitor: Timer?
+    @State private var sidebarWidth: CGFloat = 280
 
     private var palette: Palette { Palette(colorScheme: colorScheme) }
 
@@ -40,14 +41,16 @@ struct MainView: View {
 
             HStack(spacing: 0) {
                 sidebar
-                    .frame(width: 280)
+                    .frame(width: sidebarWidth)
                     .background(palette.sidebarGradient)
-                    .overlay(alignment: .trailing) {
-                        Rectangle()
-                            .fill(palette.sidebarDivider)
-                            .frame(width: 1)
-                            .ignoresSafeArea(.all, edges: .vertical)
-                    }
+                
+                // Draggable divider
+                ResizableDivider(
+                    width: $sidebarWidth,
+                    minWidth: 200,
+                    maxWidth: 500,
+                    palette: palette
+                )
 
                 mainContent
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -391,6 +394,52 @@ struct MainView: View {
 }
 
 // MARK: - Subviews
+
+private struct ResizableDivider: View {
+    @Binding var width: CGFloat
+    let minWidth: CGFloat
+    let maxWidth: CGFloat
+    let palette: Palette
+    
+    @State private var isDragging = false
+    
+    var body: some View {
+        Rectangle()
+            .fill(palette.sidebarDivider)
+            .frame(width: 1)
+            .background(
+                // Invisible wider area for easier dragging
+                Rectangle()
+                    .fill(Color.clear)
+                    .frame(width: 8)
+                    .contentShape(Rectangle())
+            )
+            .overlay(
+                // Visual indicator when dragging
+                Rectangle()
+                    .fill(Color.accentColor.opacity(isDragging ? 0.6 : 0.3))
+                    .frame(width: 2)
+                    .opacity(isDragging ? 1 : 0)
+                    .animation(.easeInOut(duration: 0.2), value: isDragging)
+            )
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        if !isDragging {
+                            isDragging = true
+                        }
+                        
+                        let newWidth = width + value.translation.width
+                        let clampedWidth = max(minWidth, min(maxWidth, newWidth))
+                        width = clampedWidth
+                    }
+                    .onEnded { _ in
+                        isDragging = false
+                    }
+            )
+            .ignoresSafeArea(edges: .vertical)
+    }
+}
 
 private struct EmptyMacroPlaceholder: View {
     var body: some View {
@@ -1083,10 +1132,8 @@ struct CardBackground: ViewModifier {
 }
 
 struct RecurraLogo: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
-        Image(colorScheme == .dark ? "BasicIconWhite" : "BasicIconBlack")
+        Image("BasicIconWhite")
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 48, height: 48)
@@ -1105,11 +1152,11 @@ struct StatusBadge: View {
             .padding(.horizontal, 14)
             .background(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(color.opacity(colorScheme == .dark ? 0.22 : 0.14))
+                    .fill(color.opacity(0.22))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .stroke(color.opacity(colorScheme == .dark ? 0.5 : 0.35))
+                    .stroke(color.opacity(0.5))
             )
             .foregroundStyle(color)
     }
@@ -1208,129 +1255,91 @@ struct Palette {
     }
 
     var backgroundGradient: LinearGradient {
-        if colorScheme == .dark {
-            return LinearGradient(colors: [
-                Color(red: 0.07, green: 0.08, blue: 0.11),
-                Color(red: 0.03, green: 0.04, blue: 0.07)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
-        } else {
-            return LinearGradient(colors: [
-                Color(red: 0.95, green: 0.97, blue: 1.0),
-                Color(red: 0.88, green: 0.93, blue: 1.0)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
-        }
+        return LinearGradient(colors: [
+            Color(red: 0.07, green: 0.08, blue: 0.11),
+            Color(red: 0.03, green: 0.04, blue: 0.07)
+        ], startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
     var sidebarGradient: LinearGradient {
-        if colorScheme == .dark {
-            return LinearGradient(colors: [
-                Color(red: 0.08, green: 0.09, blue: 0.13),
-                Color(red: 0.05, green: 0.06, blue: 0.09)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
-        } else {
-            return LinearGradient(colors: [
-                Color(red: 0.94, green: 0.97, blue: 1.0),
-                Color(red: 0.87, green: 0.92, blue: 1.0)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
-        }
+        return LinearGradient(colors: [
+            Color(red: 0.08, green: 0.09, blue: 0.13),
+            Color(red: 0.05, green: 0.06, blue: 0.09)
+        ], startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
     var sidebarDivider: Color {
-        colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.08)
+        Color.white.opacity(0.1)
     }
 
     var cardFill: Color {
-        colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.95)
+        Color.white.opacity(0.08)
     }
 
     var cardStroke: Color {
-        colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.08)
+        Color.white.opacity(0.16)
     }
 
     var rowBaseFill: Color {
-        colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.04)
+        Color.white.opacity(0.05)
     }
 
     var rowBaseStroke: Color {
-        colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.05)
+        Color.white.opacity(0.1)
     }
 
     var rowSelectionFill: Color {
-        Color.accentColor.opacity(colorScheme == .dark ? 0.32 : 0.18)
+        Color.accentColor.opacity(0.32)
     }
 
     var rowSelectionStroke: Color {
-        Color.accentColor.opacity(colorScheme == .dark ? 0.5 : 0.38)
+        Color.accentColor.opacity(0.5)
     }
 
     var primaryGradientColors: [Color] {
-        if colorScheme == .dark {
-            return [
-                Color(red: 0.35, green: 0.68, blue: 1.0),
-                Color(red: 0.18, green: 0.42, blue: 0.96)
-            ]
-        }
         return [
-            Color(red: 0.2, green: 0.55, blue: 0.98),
-            Color(red: 0.05, green: 0.37, blue: 0.9)
+            Color(red: 0.35, green: 0.68, blue: 1.0),
+            Color(red: 0.18, green: 0.42, blue: 0.96)
         ]
     }
 
     var destructiveGradientColors: [Color] {
-        if colorScheme == .dark {
-            return [
-                Color(red: 0.95, green: 0.34, blue: 0.36),
-                Color(red: 0.74, green: 0.16, blue: 0.24)
-            ]
-        }
         return [
-            Color(red: 0.94, green: 0.27, blue: 0.32),
-            Color(red: 0.78, green: 0.12, blue: 0.18)
+            Color(red: 0.95, green: 0.34, blue: 0.36),
+            Color(red: 0.74, green: 0.16, blue: 0.24)
         ]
     }
 
     func buttonStroke(isDestructive: Bool) -> Color {
         if isDestructive {
-            return colorScheme == .dark ? Color.red.opacity(0.45) : Color.red.opacity(0.3)
+            return Color.red.opacity(0.45)
         }
-        return colorScheme == .dark ? Color.white.opacity(0.25) : Color.black.opacity(0.12)
+        return Color.white.opacity(0.25)
     }
 
     func buttonShadow(isDestructive: Bool, hovering: Bool) -> Color {
         let base = isDestructive ? Color.red : Color.accentColor
-        if colorScheme == .dark {
-            return base.opacity(hovering ? 0.42 : 0.28)
-        }
-        return base.opacity(hovering ? 0.24 : 0.14)
+        return base.opacity(hovering ? 0.42 : 0.28)
     }
 
     func subtleFill(hovering: Bool) -> Color {
-        if colorScheme == .dark {
-            return Color.white.opacity(hovering ? 0.18 : 0.12)
-        }
-        return Color.black.opacity(hovering ? 0.08 : 0.05)
+        return Color.white.opacity(hovering ? 0.18 : 0.12)
     }
 
     var subtleStroke: Color {
-        colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.08)
+        Color.white.opacity(0.16)
     }
 
     func subtleShadow(hovering: Bool) -> Color {
-        if colorScheme == .dark {
-            return Color.black.opacity(hovering ? 0.32 : 0.2)
-        }
-        return Color.black.opacity(hovering ? 0.18 : 0.1)
+        return Color.black.opacity(hovering ? 0.32 : 0.2)
     }
 
     func rowButtonFill(isPressed: Bool) -> Color {
-        if colorScheme == .dark {
-            return Color.white.opacity(isPressed ? 0.22 : 0.12)
-        }
-        return Color.black.opacity(isPressed ? 0.12 : 0.06)
+        return Color.white.opacity(isPressed ? 0.22 : 0.12)
     }
 
     var rowButtonStroke: Color {
-        colorScheme == .dark ? Color.white.opacity(0.2) : Color.black.opacity(0.08)
+        Color.white.opacity(0.2)
     }
 }
 

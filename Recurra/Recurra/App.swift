@@ -64,6 +64,7 @@ struct RecurraApp: App {
                 .environmentObject(recorder)
                 .environmentObject(replayer)
                 .environmentObject(menuBarController)
+                .preferredColorScheme(.dark)
         }
         .defaultSize(width: 960, height: 960)
         .commands {

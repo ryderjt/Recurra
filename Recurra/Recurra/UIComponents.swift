@@ -147,137 +147,97 @@ public struct Palette {
     }
 
     public var backgroundGradient: LinearGradient {
-        if colorScheme == .dark {
-            return LinearGradient(colors: [
-                Color(red: 0.07, green: 0.08, blue: 0.11),
-                Color(red: 0.03, green: 0.04, blue: 0.07)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
-        } else {
-            return LinearGradient(colors: [
-                Color(red: 0.95, green: 0.97, blue: 1.0),
-                Color(red: 0.88, green: 0.93, blue: 1.0)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
-        }
+        return LinearGradient(colors: [
+            Color(red: 0.07, green: 0.08, blue: 0.11),
+            Color(red: 0.03, green: 0.04, blue: 0.07)
+        ], startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
     public var sidebarGradient: LinearGradient {
-        if colorScheme == .dark {
-            return LinearGradient(colors: [
-                Color(red: 0.08, green: 0.09, blue: 0.13),
-                Color(red: 0.05, green: 0.06, blue: 0.09)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
-        } else {
-            return LinearGradient(colors: [
-                Color(red: 0.94, green: 0.97, blue: 1.0),
-                Color(red: 0.87, green: 0.92, blue: 1.0)
-            ], startPoint: .topLeading, endPoint: .bottomTrailing)
-        }
+        return LinearGradient(colors: [
+            Color(red: 0.08, green: 0.09, blue: 0.13),
+            Color(red: 0.05, green: 0.06, blue: 0.09)
+        ], startPoint: .topLeading, endPoint: .bottomTrailing)
     }
 
     public var sidebarDivider: Color {
-        colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.08)
+        Color.white.opacity(0.1)
     }
 
     public var cardFill: Color {
-        colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.95)
+        Color.white.opacity(0.08)
     }
 
     public var cardStroke: Color {
-        colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.08)
+        Color.white.opacity(0.16)
     }
 
     public var rowBaseFill: Color {
-        colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.04)
+        Color.white.opacity(0.05)
     }
 
     public var rowBaseStroke: Color {
-        colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.05)
+        Color.white.opacity(0.1)
     }
 
     public var rowSelectionFill: Color {
-        Color.accentColor.opacity(colorScheme == .dark ? 0.32 : 0.18)
+        Color.accentColor.opacity(0.32)
     }
 
     public var rowSelectionStroke: Color {
-        Color.accentColor.opacity(colorScheme == .dark ? 0.5 : 0.38)
+        Color.accentColor.opacity(0.5)
     }
 
     public var primaryGradientColors: [Color] {
-        if colorScheme == .dark {
-            return [
-                Color(red: 0.35, green: 0.68, blue: 1.0),
-                Color(red: 0.18, green: 0.42, blue: 0.96)
-            ]
-        }
         return [
-            Color(red: 0.2, green: 0.55, blue: 0.98),
-            Color(red: 0.05, green: 0.37, blue: 0.9)
+            Color(red: 0.35, green: 0.68, blue: 1.0),
+            Color(red: 0.18, green: 0.42, blue: 0.96)
         ]
     }
 
     public var destructiveGradientColors: [Color] {
-        if colorScheme == .dark {
-            return [
-                Color(red: 0.95, green: 0.34, blue: 0.36),
-                Color(red: 0.74, green: 0.16, blue: 0.24)
-            ]
-        }
         return [
-            Color(red: 0.94, green: 0.27, blue: 0.32),
-            Color(red: 0.78, green: 0.12, blue: 0.18)
+            Color(red: 0.95, green: 0.34, blue: 0.36),
+            Color(red: 0.74, green: 0.16, blue: 0.24)
         ]
     }
 
     public func buttonStroke(isDestructive: Bool) -> Color {
         if isDestructive {
-            return colorScheme == .dark ? Color.red.opacity(0.45) : Color.red.opacity(0.3)
+            return Color.red.opacity(0.45)
         }
-        return colorScheme == .dark ? Color.white.opacity(0.25) : Color.black.opacity(0.12)
+        return Color.white.opacity(0.25)
     }
 
     public func buttonShadow(isDestructive: Bool, hovering: Bool) -> Color {
         let base = isDestructive ? Color.red : Color.accentColor
-        if colorScheme == .dark {
-            return base.opacity(hovering ? 0.42 : 0.28)
-        }
-        return base.opacity(hovering ? 0.24 : 0.14)
+        return base.opacity(hovering ? 0.42 : 0.28)
     }
 
     public func subtleFill(hovering: Bool) -> Color {
-        if colorScheme == .dark {
-            return Color.white.opacity(hovering ? 0.18 : 0.12)
-        }
-        return Color.black.opacity(hovering ? 0.08 : 0.05)
+        return Color.white.opacity(hovering ? 0.18 : 0.12)
     }
 
     public var subtleStroke: Color {
-        colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.08)
+        Color.white.opacity(0.16)
     }
 
     public func subtleShadow(hovering: Bool) -> Color {
-        if colorScheme == .dark {
-            return Color.black.opacity(hovering ? 0.32 : 0.2)
-        }
-        return Color.black.opacity(hovering ? 0.18 : 0.1)
+        return Color.black.opacity(hovering ? 0.32 : 0.2)
     }
 
     public func rowButtonFill(isPressed: Bool) -> Color {
-        if colorScheme == .dark {
-            return Color.white.opacity(isPressed ? 0.22 : 0.12)
-        }
-        return Color.black.opacity(isPressed ? 0.12 : 0.06)
+        return Color.white.opacity(isPressed ? 0.22 : 0.12)
     }
 
     public var rowButtonStroke: Color {
-        colorScheme == .dark ? Color.white.opacity(0.2) : Color.black.opacity(0.08)
+        Color.white.opacity(0.2)
     }
 }
 
 private struct RecurraLogo: View {
-    @Environment(\.colorScheme) private var colorScheme
-
     var body: some View {
-        Image(colorScheme == .dark ? "BasicIconWhite" : "BasicIconBlack")
+        Image("BasicIconWhite")
             .resizable()
             .aspectRatio(contentMode: .fit)
             .frame(width: 48, height: 48)

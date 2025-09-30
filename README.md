@@ -33,7 +33,7 @@ Recurra is a macOS application that provides an intuitive interface for recordin
 - **🎚️ Timeline Editor**: Visual editor for adjusting timing and modifying events
 - **⚙️ Customizable Settings**: Adjustable timeline defaults and keyframe snapping
 - **🔑 Hotkey Configuration**: Customizable global shortcuts for record/playback
-- **🌙 Dark/Light Mode**: Automatic adaptation to your system appearance
+- **🌙 Dark Mode**: Beautiful dark interface optimized for productivity
 
 ## 🛠️ Technical Details
 
