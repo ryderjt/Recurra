@@ -10,6 +10,7 @@ struct MainView: View {
     @State private var renameText: String = ""
     @FocusState private var isRenaming: Bool
     @State private var isShowingPermissionSheet = false
+    @State private var permissionMonitor: Timer?
 
     var body: some View {
         ZStack {
@@ -52,6 +53,13 @@ struct MainView: View {
         .onChange(of: recorder.status) { status in
             if status == .permissionDenied {
                 isShowingPermissionSheet = true
+            }
+        }
+        .onChange(of: isShowingPermissionSheet) { isPresented in
+            if isPresented {
+                startMonitoringAccessibilityPermission()
+            } else {
+                stopMonitoringAccessibilityPermission()
             }
         }
         .sheet(isPresented: $isShowingPermissionSheet, onDismiss: handlePermissionSheetDismissal) {
@@ -240,11 +248,10 @@ struct MainView: View {
 
     private func handleGrantPermission() {
         AccessibilityPermission.requestPermission()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            if AccessibilityPermission.isTrusted() {
-                recorder.markIdle()
-                isShowingPermissionSheet = false
-            }
+        _ = AccessibilityPermission.openSystemSettings()
+        if AccessibilityPermission.isTrusted() {
+            recorder.markIdle()
+            isShowingPermissionSheet = false
         }
     }
 
@@ -255,6 +262,25 @@ struct MainView: View {
         } else {
             recorder.markPermissionDenied()
         }
+    }
+
+    private func startMonitoringAccessibilityPermission() {
+        stopMonitoringAccessibilityPermission()
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
+            if AccessibilityPermission.isTrusted() {
+                timer.invalidate()
+                permissionMonitor = nil
+                recorder.markIdle()
+                isShowingPermissionSheet = false
+            }
+        }
+        timer.tolerance = 0.1
+        permissionMonitor = timer
+    }
+
+    private func stopMonitoringAccessibilityPermission() {
+        permissionMonitor?.invalidate()
+        permissionMonitor = nil
     }
 }
 

@@ -1,4 +1,5 @@
 import ApplicationServices
+import AppKit
 
 enum AccessibilityPermission {
     private static let promptOptionKey = kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String
@@ -18,5 +19,13 @@ enum AccessibilityPermission {
     static func requestPermission() -> Bool {
         let options: CFDictionary = [promptOptionKey: true] as CFDictionary
         return AXIsProcessTrustedWithOptions(options)
+    }
+
+    @discardableResult
+    static func openSystemSettings() -> Bool {
+        guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") else {
+            return false
+        }
+        return NSWorkspace.shared.open(url)
     }
 }
