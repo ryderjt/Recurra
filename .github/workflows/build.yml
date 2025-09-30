@@ -47,7 +47,7 @@ jobs:
           -exportOptionsPlist exportOptions.plist
           
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Recurra-build
         path: Recurra/build/
@@ -64,7 +64,7 @@ jobs:
         hdiutil create -volname "Recurra" -srcfolder dmg_temp -ov -format UDZO Recurra.dmg
         
     - name: Upload DMG
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Recurra-DMG
         path: Recurra/Recurra.dmg
