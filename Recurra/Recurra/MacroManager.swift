@@ -18,7 +18,11 @@ struct RecordedMacro: Identifiable {
 // Equatable conformance so arrays of RecordedMacro are Equatable for onChange(of:)
 extension RecordedMacro: Equatable {
     static func == (lhs: RecordedMacro, rhs: RecordedMacro) -> Bool {
-        lhs.id == rhs.id
+        lhs.id == rhs.id &&
+        lhs.name == rhs.name &&
+        lhs.createdAt == rhs.createdAt &&
+        lhs.duration == rhs.duration &&
+        lhs.events.count == rhs.events.count
     }
 }
 
@@ -186,11 +190,11 @@ private struct StoredMacro: Codable {
 
 private extension CGEvent {
     func archivedData() -> Data? {
-        guard let cfData = copyData(allocator: kCFAllocatorDefault) else { return nil }
+        guard let cfData = self.data else { return nil }
         return cfData as Data
     }
 
     static func fromArchivedData(_ data: Data) -> CGEvent? {
-        CGEvent(data: data as CFData)
+        CGEvent(withDataAllocator: kCFAllocatorDefault, data: data as CFData)
     }
 }
