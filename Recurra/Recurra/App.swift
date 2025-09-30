@@ -29,6 +29,7 @@ struct RecurraApp: App {
                 .environmentObject(replayer)
                 .environmentObject(menuBarController)
         }
+        .defaultSize(width: 960, height: 960)
         .commands {
             CommandMenu("Macro Controls") {
                 Button(recorder.isRecording ? "Stop Recording" : "Start Recording") {
