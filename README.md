@@ -9,7 +9,7 @@
 [![Swift](https://img.shields.io/badge/Swift-5.9-orange?style=for-the-badge&logo=swift)](https://swift.org)
 [![macOS](https://img.shields.io/badge/macOS-13.0%2B-lightgrey?style=for-the-badge&logo=apple)](https://www.apple.com/macos)
 [![License](https://img.shields.io/badge/License-GPLv3-blue?style=for-the-badge)](./LICENSE)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge)](https://github.com/your-username/Recurra)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge)](https://github.com/ryderjt/Recurra)
 
 *Capture, edit, and replay complex workflows with precision timing*
 
@@ -78,7 +78,7 @@ Recurra is a sophisticated macOS application that revolutionizes task automation
 ### Building from Source
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/Recurra.git
+git clone https://github.com/ryderjt/Recurra.git
 cd Recurra
 
 # Open in Xcode
