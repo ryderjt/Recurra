@@ -9,6 +9,7 @@ struct MainView: View {
     @State private var selectedMacroID: RecordedMacro.ID?
     @State private var renameText: String = ""
     @FocusState private var isRenaming: Bool
+    @State private var isShowingPermissionSheet = false
 
     var body: some View {
         ZStack {
@@ -32,6 +33,7 @@ struct MainView: View {
                 selectedMacroID = macroManager.mostRecentMacro?.id
             }
             renameText = selectedMacro?.name ?? ""
+            presentPermissionIfNeeded()
         }
         .onChange(of: macroManager.macros) { macros in
             guard !macros.isEmpty else {
@@ -46,6 +48,16 @@ struct MainView: View {
         }
         .onChange(of: selectedMacroID) { _ in
             renameText = selectedMacro?.name ?? ""
+        }
+        .onChange(of: recorder.status) { status in
+            if status == .permissionDenied {
+                isShowingPermissionSheet = true
+            }
+        }
+        .sheet(isPresented: $isShowingPermissionSheet, onDismiss: handlePermissionSheetDismissal) {
+            PermissionRequestView(onGrant: handleGrantPermission,
+                                   onClose: handlePermissionSheetDismissal)
+            .preferredColorScheme(.dark)
         }
     }
 
@@ -169,7 +181,9 @@ struct MainView: View {
             }
 
             if recorder.status == .permissionDenied {
-                PermissionPrompt()
+                PermissionPrompt(primaryAction: {
+                    isShowingPermissionSheet = true
+                })
             }
         }
     }
@@ -214,6 +228,32 @@ struct MainView: View {
         renameText = macro.name
         DispatchQueue.main.async {
             isRenaming = true
+        }
+    }
+
+    private func presentPermissionIfNeeded() {
+        if !AccessibilityPermission.isTrusted() {
+            recorder.markPermissionDenied()
+            isShowingPermissionSheet = true
+        }
+    }
+
+    private func handleGrantPermission() {
+        AccessibilityPermission.requestPermission()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            if AccessibilityPermission.isTrusted() {
+                recorder.markIdle()
+                isShowingPermissionSheet = false
+            }
+        }
+    }
+
+    private func handlePermissionSheetDismissal() {
+        if AccessibilityPermission.isTrusted() {
+            recorder.markIdle()
+            isShowingPermissionSheet = false
+        } else {
+            recorder.markPermissionDenied()
         }
     }
 }
@@ -401,18 +441,68 @@ private struct StatusBadge: View {
 }
 
 private struct PermissionPrompt: View {
+    let primaryAction: () -> Void
+
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .foregroundStyle(.orange)
             Text("Accessibility permission is required to record and replay events.")
                 .font(.callout)
-            Button("Open Settings", action: openAccessibilityPreferences)
+            Button("Grant Permission", action: primaryAction)
                 .buttonStyle(SubtleButtonStyle())
         }
         .padding(14)
         .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.white.opacity(0.08)))
         .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Color.white.opacity(0.15)))
+    }
+}
+
+private struct PermissionRequestView: View {
+    let onGrant: () -> Void
+    let onClose: () -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ZStack {
+            LinearGradient(colors: [Color(red: 0.12, green: 0.12, blue: 0.15),
+                                    Color(red: 0.08, green: 0.08, blue: 0.12)],
+                           startPoint: .topLeading,
+                           endPoint: .bottomTrailing)
+                .ignoresSafeArea()
+
+            VStack(spacing: 24) {
+                Image(systemName: "hand.raised")
+                    .font(.system(size: 54, weight: .medium))
+                    .foregroundStyle(.orange)
+
+                Text("Grant Accessibility Access")
+                    .font(.title2.weight(.semibold))
+
+                Text("Recurra needs Accessibility permission to capture and replay keyboard and mouse events. Grant access to continue using recording and playback features.")
+                    .font(.body)
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: 360)
+
+                VStack(spacing: 12) {
+                    Button("Grant Permission") {
+                        onGrant()
+                    }
+                    .buttonStyle(GradientButtonStyle(isDestructive: false))
+
+                    Button("Not Now") {
+                        dismiss()
+                        onClose()
+                    }
+                    .buttonStyle(SubtleButtonStyle())
+                }
+            }
+            .padding(36)
+            .frame(maxWidth: 480)
+            .background(RoundedRectangle(cornerRadius: 28, style: .continuous).fill(Color.white.opacity(0.06)))
+            .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous).stroke(Color.white.opacity(0.12)))
+        }
     }
 }
 
@@ -530,11 +620,6 @@ private struct RowIconButtonStyle: ButtonStyle {
             .scaleEffect(configuration.isPressed ? 0.9 : 1)
             .contentShape(Circle())
     }
-}
-
-private func openAccessibilityPreferences() {
-    guard let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility") else { return }
-    NSWorkspace.shared.open(url)
 }
 
 #Preview {
