@@ -110,15 +110,8 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 Recurra is released under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](./LICENSE).
 
-**What this means:**
-- ✅ **Learn and study** the code for educational purposes
-- ✅ **Use personally** and modify for your own projects  
-- ✅ **Share** with others for non-commercial purposes
-- ❌ **Cannot sell** or use commercially without permission
-- ❌ **Cannot claim** as your own work
-
 ---
 
-**Made with ❤️ for the macOS community**
+**Made with ❤️ by ryderjt**
 
 [Report Bug](../../issues) · [Request Feature](../../issues) · [Join Discussion](../../discussions)
