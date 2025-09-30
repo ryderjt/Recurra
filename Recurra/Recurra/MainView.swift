@@ -1334,3 +1334,8 @@ struct Palette {
         .environmentObject(recorder)
         .environmentObject(replayer)
 }
+
+
+
+
+
