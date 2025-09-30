@@ -15,6 +15,14 @@ struct RecordedMacro: Identifiable {
     let duration: TimeInterval
 }
 
+// Equatable conformance so arrays of RecordedMacro are Equatable for onChange(of:)
+extension RecordedMacro: Equatable {
+    static func == (lhs: RecordedMacro, rhs: RecordedMacro) -> Bool {
+        // Compare by stable identifier; avoids needing CGEvent to be Equatable
+        lhs.id == rhs.id
+    }
+}
+
 final class MacroManager: ObservableObject {
     @Published private(set) var macros: [RecordedMacro] = []
 
@@ -179,11 +187,24 @@ private struct StoredMacro: Codable {
 
 private extension CGEvent {
     func archivedData() -> Data? {
-        guard let data = CGEventCreateData(nil, self) else { return nil }
-        return data as Data
+        if #available(macOS 13.0, *) {
+            // Modern Swift overlay
+            guard let cfData = self.copyData(allocator: kCFAllocatorDefault) else { return nil }
+            return cfData as Data
+        } else {
+            // Fallback for older SDKs
+            guard let cfData = CGEventCreateData(nil, self) else { return nil }
+            return cfData as Data
+        }
     }
 
     static func fromArchivedData(_ data: Data) -> CGEvent? {
-        CGEventCreateFromData(nil, data as CFData)
+        if #available(macOS 13.0, *) {
+            // Modern Swift initializer
+            return CGEvent(withDataAllocator: kCFAllocatorDefault, data: data as CFData)
+        } else {
+            // Fallback for older SDKs
+            return CGEventCreateFromData(nil, data as CFData)
+        }
     }
 }

@@ -105,7 +105,7 @@ struct MainView: View {
                 }
                 .buttonStyle(GradientButtonStyle(isDestructive: recorder.isRecording))
                 .disabled(recorder.isReplaying)
-                .keyboardShortcut(.r, modifiers: [.command, .option])
+                .keyboardShortcut("r", modifiers: [.command, .option])
 
                 Button(action: replaySelected) {
                     Label("Replay Selected", systemImage: "play.circle")
@@ -120,7 +120,7 @@ struct MainView: View {
                 }
                 .buttonStyle(SubtleButtonStyle(isDestructive: replayer.isReplaying))
                 .disabled((macroManager.mostRecentMacro == nil && !replayer.isReplaying) || recorder.isRecording)
-                .keyboardShortcut(.p, modifiers: [.command, .option])
+                .keyboardShortcut("p", modifiers: [.command, .option])
             }
 
             Divider()
