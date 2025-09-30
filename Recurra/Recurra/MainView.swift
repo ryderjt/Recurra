@@ -5,6 +5,7 @@ struct MainView: View {
     @EnvironmentObject private var recorder: Recorder
     @EnvironmentObject private var replayer: Replayer
     @EnvironmentObject private var macroManager: MacroManager
+    @Environment(\.colorScheme) private var colorScheme
 
     @State private var selectedMacroID: RecordedMacro.ID?
     @State private var renameText: String = ""
@@ -12,21 +13,27 @@ struct MainView: View {
     @State private var isShowingPermissionSheet = false
     @State private var permissionMonitor: Timer?
 
+    private var palette: Palette { Palette(colorScheme: colorScheme) }
+
     var body: some View {
         ZStack {
-            LinearGradient(colors: [Color(red: 0.12, green: 0.12, blue: 0.15),
-                                    Color(red: 0.08, green: 0.08, blue: 0.12)],
-                           startPoint: .topLeading,
-                           endPoint: .bottomTrailing)
+            palette.backgroundGradient
                 .ignoresSafeArea()
 
-            NavigationSplitView(sidebar: {
+            HStack(spacing: 0) {
                 sidebar
-                    .frame(minWidth: 260)
-            }, detail: {
-                detail
-            })
-            .navigationSplitViewStyle(.prominentDetail)
+                    .frame(width: 280)
+                    .background(palette.sidebarGradient)
+                    .overlay(alignment: .trailing) {
+                        Rectangle()
+                            .fill(palette.sidebarDivider)
+                            .frame(width: 1)
+                            .ignoresSafeArea(.all, edges: .vertical)
+                    }
+
+                mainContent
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            }
         }
         .frame(minWidth: 920, minHeight: 560)
         .onAppear {
@@ -65,16 +72,18 @@ struct MainView: View {
         .sheet(isPresented: $isShowingPermissionSheet, onDismiss: handlePermissionSheetDismissal) {
             PermissionRequestView(onGrant: handleGrantPermission,
                                    onClose: handlePermissionSheetDismissal)
-            .preferredColorScheme(.dark)
         }
     }
 
     private var sidebar: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Saved Macros")
+        VStack(alignment: .leading, spacing: 18) {
+            Text("Library")
                 .font(.title2.weight(.semibold))
-                .padding(.top, 32)
-                .padding(.horizontal, 20)
+                .padding(.top, 30)
+
+            Text("Organize, rename, and replay your recorded flows.")
+                .font(.callout)
+                .foregroundStyle(.secondary)
 
             List(selection: $selectedMacroID) {
                 if macroManager.macros.isEmpty {
@@ -98,53 +107,18 @@ struct MainView: View {
             }
             .listStyle(.sidebar)
             .scrollContentBackground(.hidden)
+            .background(Color.clear)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 0))
+        .padding(.horizontal, 22)
+        .padding(.bottom, 28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
-    private var detail: some View {
-        VStack(alignment: .leading, spacing: 24) {
+    private var mainContent: some View {
+        VStack(alignment: .leading, spacing: 20) {
             header
 
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Next macro name")
-                    .font(.headline)
-                TextField("Macro name", text: $recorder.nextMacroName)
-                    .textFieldStyle(.roundedBorder)
-                    .padding(.trailing, 200)
-                    .onSubmit {
-                        recorder.nextMacroName = recorder.nextMacroName.trimmingCharacters(in: .whitespaces)
-                    }
-            }
-
-            HStack(spacing: 18) {
-                Button(action: recorder.toggleRecording) {
-                    Label(recorder.isRecording ? "Stop" : "Record", systemImage: recorder.isRecording ? "stop.circle.fill" : "record.circle")
-                        .font(.headline)
-                }
-                .buttonStyle(GradientButtonStyle(isDestructive: recorder.isRecording))
-                .disabled(recorder.isReplaying)
-                .keyboardShortcut("r", modifiers: [.command, .option])
-
-                Button(action: replaySelected) {
-                    Label("Replay Selected", systemImage: "play.circle")
-                        .font(.headline)
-                }
-                .buttonStyle(SubtleButtonStyle())
-                .disabled(selectedMacro == nil || recorder.isRecording || recorder.isReplaying)
-
-                Button(action: replayer.togglePlayback) {
-                    Label(replayer.isReplaying ? "Stop Playback" : "Replay Latest",
-                          systemImage: replayer.isReplaying ? "stop.circle" : "gobackward")
-                }
-                .buttonStyle(SubtleButtonStyle(isDestructive: replayer.isReplaying))
-                .disabled((macroManager.mostRecentMacro == nil && !replayer.isReplaying) || recorder.isRecording)
-                .keyboardShortcut("p", modifiers: [.command, .option])
-            }
-
-            Divider()
-                .padding(.vertical, 4)
+            controlsCard
 
             if let selectedMacro {
                 MacroDetailCard(macro: selectedMacro,
@@ -155,31 +129,22 @@ struct MainView: View {
                                 deleteAction: { macroManager.remove(selectedMacro) },
                                 isReplaying: replayer.isReplaying)
             } else {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("No macro selected")
-                        .font(.headline)
-                    Text("Pick a macro from the sidebar to see its timeline and quick actions.")
-                        .foregroundStyle(.secondary)
-                }
-                .padding(24)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.white.opacity(0.08)))
-                .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Color.white.opacity(0.15)))
+                emptySelectionCard
             }
 
-            Spacer()
+            shortcutsCard
 
-            footer
+            Spacer(minLength: 0)
         }
-        .padding(40)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(.horizontal, 42)
+        .padding(.vertical, 34)
     }
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 16) {
                 VStack(alignment: .leading, spacing: 6) {
-                    Text("Macro Recorder")
+                    Text("Recurra")
                         .font(.largeTitle.bold())
                     Text("Capture and replay keyboard and mouse flows with a minimalist workspace.")
                         .foregroundStyle(.secondary)
@@ -196,18 +161,120 @@ struct MainView: View {
         }
     }
 
-    private var footer: some View {
+    private var controlsCard: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Recurra")
+                .font(.title3.weight(.semibold))
+
+            Text("Name your next macro and control recording or playback from here.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            HStack(alignment: .center, spacing: 16) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Next macro name")
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(.secondary)
+
+                    TextField("Macro name", text: $recorder.nextMacroName)
+                        .textFieldStyle(.roundedBorder)
+                        .frame(maxWidth: 260)
+                        .onSubmit {
+                            recorder.nextMacroName = recorder.nextMacroName.trimmingCharacters(in: .whitespaces)
+                        }
+                }
+
+                Spacer(minLength: 12)
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Button(action: recorder.toggleRecording) {
+                        Label(recorder.isRecording ? "Stop" : "Record", systemImage: recorder.isRecording ? "stop.circle.fill" : "record.circle")
+                            .font(.headline)
+                    }
+                    .buttonStyle(GradientButtonStyle(isDestructive: recorder.isRecording))
+                    .disabled(recorder.isReplaying)
+                    .keyboardShortcut("r", modifiers: [.command, .option])
+
+                    Button(action: replaySelected) {
+                        Label("Replay Selected", systemImage: "play.circle")
+                    }
+                    .buttonStyle(SubtleButtonStyle())
+                    .disabled(selectedMacro == nil || recorder.isRecording || recorder.isReplaying)
+                }
+
+                VStack(alignment: .leading, spacing: 10) {
+                    Button(action: replayer.togglePlayback) {
+                        Label(replayer.isReplaying ? "Stop Playback" : "Replay Latest",
+                              systemImage: replayer.isReplaying ? "stop.circle" : "gobackward")
+                    }
+                    .buttonStyle(SubtleButtonStyle(isDestructive: replayer.isReplaying))
+                    .disabled((macroManager.mostRecentMacro == nil && !replayer.isReplaying) || recorder.isRecording)
+                    .keyboardShortcut("p", modifiers: [.command, .option])
+
+                    Label(statusMessage, systemImage: statusIcon)
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .padding(22)
+        .cardBackground()
+    }
+
+    private var emptySelectionCard: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Shortcuts")
+            Text("No macro selected")
                 .font(.headline)
-            HStack(spacing: 16) {
+            Text("Pick a macro from the library to see its details, timeline, and quick actions.")
+                .foregroundStyle(.secondary)
+        }
+        .padding(24)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .cardBackground(cornerRadius: 24)
+    }
+
+    private var shortcutsCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("Keyboard shortcuts")
+                .font(.headline)
+
+            HStack(spacing: 14) {
                 ShortcutBadge(icon: "record.circle", title: "Toggle recording", shortcut: "⌘⌥R")
                 ShortcutBadge(icon: "play.circle", title: "Replay latest", shortcut: "⌘⌥P")
             }
+
             Text("Grant Accessibility permissions when prompted so the app can monitor and replay events.")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
+        .padding(22)
+        .cardBackground()
+    }
+
+    private var statusMessage: String {
+        if recorder.isRecording {
+            return "Recording in progress"
+        }
+        if replayer.isReplaying {
+            return "Replaying latest macro"
+        }
+        if let selectedMacro {
+            return "Selected: \(selectedMacro.name)"
+        }
+        return "Select a macro to replay"
+    }
+
+    private var statusIcon: String {
+        if recorder.isRecording {
+            return "record.circle"
+        }
+        if replayer.isReplaying {
+            return "play.circle"
+        }
+        if selectedMacro != nil {
+            return "checkmark.circle"
+        }
+        return "sidebar.left"
     }
 
     private var selectedMacro: RecordedMacro? {
@@ -320,6 +387,8 @@ private struct MacroRow: View {
     let renameAction: () -> Void
     let deleteAction: () -> Void
 
+    @Environment(\.colorScheme) private var colorScheme
+
     private static let relativeFormatter: RelativeDateTimeFormatter = {
         let formatter = RelativeDateTimeFormatter()
         formatter.unitsStyle = .full
@@ -327,6 +396,8 @@ private struct MacroRow: View {
     }()
 
     var body: some View {
+        let palette = Palette(colorScheme: colorScheme)
+
         HStack(alignment: .center, spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(macro.name)
@@ -358,11 +429,11 @@ private struct MacroRow: View {
         .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(isSelected ? Color.white.opacity(0.15) : Color.clear)
+                .fill(isSelected ? palette.rowSelectionFill : palette.rowBaseFill)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.white.opacity(isSelected ? 0.3 : 0.1))
+                .stroke(isSelected ? palette.rowSelectionStroke : palette.rowBaseStroke)
         )
         .listRowBackground(Color.clear)
         .contextMenu {
@@ -426,8 +497,7 @@ private struct MacroDetailCard: View {
         }
         .padding(28)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 24, style: .continuous).fill(Color.white.opacity(0.08)))
-        .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(Color.white.opacity(0.15)))
+        .cardBackground(cornerRadius: 24)
     }
 
     private func durationString(for macro: RecordedMacro) -> String {
@@ -442,14 +512,22 @@ private struct MacroDetailCard: View {
 private struct StatusBadge: View {
     let status: Recorder.Status
 
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
         Text(status.description)
             .font(.subheadline.weight(.semibold))
             .padding(.vertical, 8)
             .padding(.horizontal, 14)
-            .background(RoundedRectangle(cornerRadius: 16, style: .continuous).fill(color.opacity(0.2)))
-            .overlay(RoundedRectangle(cornerRadius: 16, style: .continuous).stroke(color.opacity(0.5)))
-            .foregroundColor(color)
+            .background(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(color.opacity(colorScheme == .dark ? 0.22 : 0.14))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .stroke(color.opacity(colorScheme == .dark ? 0.5 : 0.35))
+            )
+            .foregroundStyle(color)
     }
 
     private var color: Color {
@@ -478,9 +556,8 @@ private struct PermissionPrompt: View {
             Button("Grant Permission", action: primaryAction)
                 .buttonStyle(SubtleButtonStyle())
         }
-        .padding(14)
-        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.white.opacity(0.08)))
-        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Color.white.opacity(0.15)))
+        .padding(16)
+        .cardBackground(cornerRadius: 16)
     }
 }
 
@@ -488,13 +565,13 @@ private struct PermissionRequestView: View {
     let onGrant: () -> Void
     let onClose: () -> Void
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
+        let palette = Palette(colorScheme: colorScheme)
+
         ZStack {
-            LinearGradient(colors: [Color(red: 0.12, green: 0.12, blue: 0.15),
-                                    Color(red: 0.08, green: 0.08, blue: 0.12)],
-                           startPoint: .topLeading,
-                           endPoint: .bottomTrailing)
+            palette.backgroundGradient
                 .ignoresSafeArea()
 
             VStack(spacing: 24) {
@@ -526,8 +603,7 @@ private struct PermissionRequestView: View {
             }
             .padding(36)
             .frame(maxWidth: 480)
-            .background(RoundedRectangle(cornerRadius: 28, style: .continuous).fill(Color.white.opacity(0.06)))
-            .overlay(RoundedRectangle(cornerRadius: 28, style: .continuous).stroke(Color.white.opacity(0.12)))
+            .cardBackground(cornerRadius: 28)
         }
     }
 }
@@ -537,7 +613,13 @@ private struct ShortcutBadge: View {
     let title: String
     let shortcut: String
 
+    @Environment(\.colorScheme) private var colorScheme
+
     var body: some View {
+        let palette = Palette(colorScheme: colorScheme)
+        let fill = palette.subtleFill(hovering: false)
+        let stroke = palette.subtleStroke
+
         HStack(spacing: 8) {
             Image(systemName: icon)
             Text(title)
@@ -547,8 +629,14 @@ private struct ShortcutBadge: View {
         }
         .padding(12)
         .frame(maxWidth: 240)
-        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color.white.opacity(0.08)))
-        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Color.white.opacity(0.15)))
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .fill(fill)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(stroke)
+        )
     }
 }
 
@@ -563,8 +651,14 @@ private struct GradientButtonStyle: ButtonStyle {
         let configuration: Configuration
         let isDestructive: Bool
         @State private var hovering = false
+        @Environment(\.colorScheme) private var colorScheme
 
         var body: some View {
+            let palette = Palette(colorScheme: colorScheme)
+            let gradientColors = isDestructive ? palette.destructiveGradientColors : palette.primaryGradientColors
+            let stroke = palette.buttonStroke(isDestructive: isDestructive)
+            let shadow = palette.buttonShadow(isDestructive: isDestructive, hovering: hovering)
+
             configuration.label
                 .padding(.vertical, 12)
                 .padding(.horizontal, 26)
@@ -576,22 +670,15 @@ private struct GradientButtonStyle: ButtonStyle {
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .stroke(Color.white.opacity(0.2))
+                        .stroke(stroke)
                 )
-                .shadow(color: Color.black.opacity(hovering ? 0.18 : 0.12), radius: hovering ? 12 : 8, x: 0, y: hovering ? 6 : 4)
+                .shadow(color: shadow, radius: hovering ? 12 : 8, x: 0, y: hovering ? 6 : 4)
                 .scaleEffect(configuration.isPressed ? 0.97 : 1)
                 .animation(.easeOut(duration: 0.18), value: hovering)
                 .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
                 .onHover { hovering in
                     self.hovering = hovering
                 }
-        }
-
-        private var gradientColors: [Color] {
-            if isDestructive {
-                return [Color(red: 0.8, green: 0.3, blue: 0.3), Color(red: 0.6, green: 0.1, blue: 0.2)]
-            }
-            return [Color(red: 0.2, green: 0.5, blue: 0.9), Color(red: 0.1, green: 0.3, blue: 0.8)]
         }
     }
 }
@@ -607,21 +694,27 @@ private struct SubtleButtonStyle: ButtonStyle {
         let configuration: Configuration
         let isDestructive: Bool
         @State private var hovering = false
+        @Environment(\.colorScheme) private var colorScheme
 
         var body: some View {
+            let palette = Palette(colorScheme: colorScheme)
+            let fill = palette.subtleFill(hovering: hovering)
+            let stroke = palette.subtleStroke
+            let shadow = palette.subtleShadow(hovering: hovering)
+
             configuration.label
                 .padding(.vertical, 10)
                 .padding(.horizontal, 22)
                 .background(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.white.opacity(hovering ? 0.15 : 0.08))
+                        .fill(fill)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.white.opacity(0.2))
+                        .stroke(stroke)
                 )
                 .foregroundStyle(isDestructive ? Color.red : Color.primary)
-                .shadow(color: Color.black.opacity(hovering ? 0.15 : 0.08), radius: hovering ? 10 : 4, x: 0, y: hovering ? 4 : 2)
+                .shadow(color: shadow, radius: hovering ? 10 : 4, x: 0, y: hovering ? 4 : 2)
                 .scaleEffect(configuration.isPressed ? 0.98 : 1)
                 .animation(.easeOut(duration: 0.18), value: hovering)
                 .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
@@ -634,17 +727,183 @@ private struct SubtleButtonStyle: ButtonStyle {
 
 private struct RowIconButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .padding(8)
+        RowIconButton(configuration: configuration)
+    }
+
+    private struct RowIconButton: View {
+        let configuration: Configuration
+        @Environment(\.colorScheme) private var colorScheme
+
+        var body: some View {
+            let palette = Palette(colorScheme: colorScheme)
+
+            configuration.label
+                .padding(8)
+                .background(
+                    Circle().fill(palette.rowButtonFill(isPressed: configuration.isPressed))
+                )
+                .overlay(
+                    Circle().stroke(palette.rowButtonStroke)
+                )
+                .foregroundStyle(.primary)
+                .scaleEffect(configuration.isPressed ? 0.9 : 1)
+                .contentShape(Circle())
+        }
+    }
+}
+
+private extension View {
+    func cardBackground(cornerRadius: CGFloat = 20) -> some View {
+        modifier(CardBackground(cornerRadius: cornerRadius))
+    }
+}
+
+private struct CardBackground: ViewModifier {
+    @Environment(\.colorScheme) private var colorScheme
+    let cornerRadius: CGFloat
+
+    func body(content: Content) -> some View {
+        let palette = Palette(colorScheme: colorScheme)
+
+        content
             .background(
-                Circle().fill(Color.white.opacity(configuration.isPressed ? 0.2 : 0.1))
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(palette.cardFill)
             )
             .overlay(
-                Circle().stroke(Color.white.opacity(0.2))
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(palette.cardStroke)
             )
-            .foregroundStyle(.primary)
-            .scaleEffect(configuration.isPressed ? 0.9 : 1)
-            .contentShape(Circle())
+    }
+}
+
+private struct Palette {
+    let colorScheme: ColorScheme
+
+    var backgroundGradient: LinearGradient {
+        if colorScheme == .dark {
+            return LinearGradient(colors: [
+                Color(red: 0.07, green: 0.08, blue: 0.11),
+                Color(red: 0.03, green: 0.04, blue: 0.07)
+            ], startPoint: .topLeading, endPoint: .bottomTrailing)
+        } else {
+            return LinearGradient(colors: [
+                Color(red: 0.95, green: 0.97, blue: 1.0),
+                Color(red: 0.88, green: 0.93, blue: 1.0)
+            ], startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
+    }
+
+    var sidebarGradient: LinearGradient {
+        if colorScheme == .dark {
+            return LinearGradient(colors: [
+                Color(red: 0.08, green: 0.09, blue: 0.13),
+                Color(red: 0.05, green: 0.06, blue: 0.09)
+            ], startPoint: .topLeading, endPoint: .bottomTrailing)
+        } else {
+            return LinearGradient(colors: [
+                Color(red: 0.94, green: 0.97, blue: 1.0),
+                Color(red: 0.87, green: 0.92, blue: 1.0)
+            ], startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
+    }
+
+    var sidebarDivider: Color {
+        colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.08)
+    }
+
+    var cardFill: Color {
+        colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.95)
+    }
+
+    var cardStroke: Color {
+        colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.08)
+    }
+
+    var rowBaseFill: Color {
+        colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.04)
+    }
+
+    var rowBaseStroke: Color {
+        colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.05)
+    }
+
+    var rowSelectionFill: Color {
+        Color.accentColor.opacity(colorScheme == .dark ? 0.32 : 0.18)
+    }
+
+    var rowSelectionStroke: Color {
+        Color.accentColor.opacity(colorScheme == .dark ? 0.5 : 0.38)
+    }
+
+    var primaryGradientColors: [Color] {
+        if colorScheme == .dark {
+            return [
+                Color(red: 0.35, green: 0.68, blue: 1.0),
+                Color(red: 0.18, green: 0.42, blue: 0.96)
+            ]
+        }
+        return [
+            Color(red: 0.2, green: 0.55, blue: 0.98),
+            Color(red: 0.05, green: 0.37, blue: 0.9)
+        ]
+    }
+
+    var destructiveGradientColors: [Color] {
+        if colorScheme == .dark {
+            return [
+                Color(red: 0.95, green: 0.34, blue: 0.36),
+                Color(red: 0.74, green: 0.16, blue: 0.24)
+            ]
+        }
+        return [
+            Color(red: 0.94, green: 0.27, blue: 0.32),
+            Color(red: 0.78, green: 0.12, blue: 0.18)
+        ]
+    }
+
+    func buttonStroke(isDestructive: Bool) -> Color {
+        if isDestructive {
+            return colorScheme == .dark ? Color.red.opacity(0.45) : Color.red.opacity(0.3)
+        }
+        return colorScheme == .dark ? Color.white.opacity(0.25) : Color.black.opacity(0.12)
+    }
+
+    func buttonShadow(isDestructive: Bool, hovering: Bool) -> Color {
+        let base = isDestructive ? Color.red : Color.accentColor
+        if colorScheme == .dark {
+            return base.opacity(hovering ? 0.42 : 0.28)
+        }
+        return base.opacity(hovering ? 0.24 : 0.14)
+    }
+
+    func subtleFill(hovering: Bool) -> Color {
+        if colorScheme == .dark {
+            return Color.white.opacity(hovering ? 0.18 : 0.12)
+        }
+        return Color.black.opacity(hovering ? 0.08 : 0.05)
+    }
+
+    var subtleStroke: Color {
+        colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.08)
+    }
+
+    func subtleShadow(hovering: Bool) -> Color {
+        if colorScheme == .dark {
+            return Color.black.opacity(hovering ? 0.32 : 0.2)
+        }
+        return Color.black.opacity(hovering ? 0.18 : 0.1)
+    }
+
+    func rowButtonFill(isPressed: Bool) -> Color {
+        if colorScheme == .dark {
+            return Color.white.opacity(isPressed ? 0.22 : 0.12)
+        }
+        return Color.black.opacity(isPressed ? 0.12 : 0.06)
+    }
+
+    var rowButtonStroke: Color {
+        colorScheme == .dark ? Color.white.opacity(0.2) : Color.black.opacity(0.08)
     }
 }
 
