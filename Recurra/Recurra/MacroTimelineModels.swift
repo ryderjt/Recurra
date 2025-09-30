@@ -142,7 +142,7 @@ struct MouseAction: Equatable {
                                    mouseType: eventType,
                                    mouseCursorPosition: location,
                                    mouseButton: button) else {
-            NSLog("Failed to create mouse event for phase: %@, button: %d, location: %@", 
+            NSLog("Failed to create mouse event for phase: %@, button: %d, location: %@",
                   phase.rawValue, button.rawValue, NSStringFromPoint(location))
             return nil
         }
@@ -296,7 +296,7 @@ struct MacroTimelineDraft: Equatable {
     mutating func clampDurationToKeyframes() {
         let maximum = maximumKeyframeTime
         if duration < maximum {
-            duration = maximum.rounded(toPlaces: 2) + 0.1
+            duration = (maximum * 100).rounded() / 100 + 0.1
         }
     }
 
@@ -397,13 +397,5 @@ private extension CGEventType {
         default:
             return "Event \(rawValue)"
         }
-    }
-}
-
-private extension TimeInterval {
-    func rounded(toPlaces places: Int) -> TimeInterval {
-        guard places >= 0 else { return self }
-        let multiplier = pow(10.0, Double(places))
-        return (self * multiplier).rounded() / multiplier
     }
 }

@@ -139,10 +139,14 @@ private struct CardBackground: ViewModifier {
     }
 }
 
-private struct Palette {
-    let colorScheme: ColorScheme
+public struct Palette {
+    public let colorScheme: ColorScheme
+    
+    public init(colorScheme: ColorScheme) {
+        self.colorScheme = colorScheme
+    }
 
-    var backgroundGradient: LinearGradient {
+    public var backgroundGradient: LinearGradient {
         if colorScheme == .dark {
             return LinearGradient(colors: [
                 Color(red: 0.07, green: 0.08, blue: 0.11),
@@ -156,7 +160,7 @@ private struct Palette {
         }
     }
 
-    var sidebarGradient: LinearGradient {
+    public var sidebarGradient: LinearGradient {
         if colorScheme == .dark {
             return LinearGradient(colors: [
                 Color(red: 0.08, green: 0.09, blue: 0.13),
@@ -170,35 +174,35 @@ private struct Palette {
         }
     }
 
-    var sidebarDivider: Color {
+    public var sidebarDivider: Color {
         colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.08)
     }
 
-    var cardFill: Color {
+    public var cardFill: Color {
         colorScheme == .dark ? Color.white.opacity(0.08) : Color.white.opacity(0.95)
     }
 
-    var cardStroke: Color {
+    public var cardStroke: Color {
         colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.08)
     }
 
-    var rowBaseFill: Color {
+    public var rowBaseFill: Color {
         colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.04)
     }
 
-    var rowBaseStroke: Color {
+    public var rowBaseStroke: Color {
         colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.05)
     }
 
-    var rowSelectionFill: Color {
+    public var rowSelectionFill: Color {
         Color.accentColor.opacity(colorScheme == .dark ? 0.32 : 0.18)
     }
 
-    var rowSelectionStroke: Color {
+    public var rowSelectionStroke: Color {
         Color.accentColor.opacity(colorScheme == .dark ? 0.5 : 0.38)
     }
 
-    var primaryGradientColors: [Color] {
+    public var primaryGradientColors: [Color] {
         if colorScheme == .dark {
             return [
                 Color(red: 0.35, green: 0.68, blue: 1.0),
@@ -211,7 +215,7 @@ private struct Palette {
         ]
     }
 
-    var destructiveGradientColors: [Color] {
+    public var destructiveGradientColors: [Color] {
         if colorScheme == .dark {
             return [
                 Color(red: 0.95, green: 0.34, blue: 0.36),
@@ -224,14 +228,14 @@ private struct Palette {
         ]
     }
 
-    func buttonStroke(isDestructive: Bool) -> Color {
+    public func buttonStroke(isDestructive: Bool) -> Color {
         if isDestructive {
             return colorScheme == .dark ? Color.red.opacity(0.45) : Color.red.opacity(0.3)
         }
         return colorScheme == .dark ? Color.white.opacity(0.25) : Color.black.opacity(0.12)
     }
 
-    func buttonShadow(isDestructive: Bool, hovering: Bool) -> Color {
+    public func buttonShadow(isDestructive: Bool, hovering: Bool) -> Color {
         let base = isDestructive ? Color.red : Color.accentColor
         if colorScheme == .dark {
             return base.opacity(hovering ? 0.42 : 0.28)
@@ -239,39 +243,39 @@ private struct Palette {
         return base.opacity(hovering ? 0.24 : 0.14)
     }
 
-    func subtleFill(hovering: Bool) -> Color {
+    public func subtleFill(hovering: Bool) -> Color {
         if colorScheme == .dark {
             return Color.white.opacity(hovering ? 0.18 : 0.12)
         }
         return Color.black.opacity(hovering ? 0.08 : 0.05)
     }
 
-    var subtleStroke: Color {
+    public var subtleStroke: Color {
         colorScheme == .dark ? Color.white.opacity(0.16) : Color.black.opacity(0.08)
     }
 
-    func subtleShadow(hovering: Bool) -> Color {
+    public func subtleShadow(hovering: Bool) -> Color {
         if colorScheme == .dark {
             return Color.black.opacity(hovering ? 0.32 : 0.2)
         }
         return Color.black.opacity(hovering ? 0.18 : 0.1)
     }
 
-    func rowButtonFill(isPressed: Bool) -> Color {
+    public func rowButtonFill(isPressed: Bool) -> Color {
         if colorScheme == .dark {
             return Color.white.opacity(isPressed ? 0.22 : 0.12)
         }
         return Color.black.opacity(isPressed ? 0.12 : 0.06)
     }
 
-    var rowButtonStroke: Color {
+    public var rowButtonStroke: Color {
         colorScheme == .dark ? Color.white.opacity(0.2) : Color.black.opacity(0.08)
     }
 }
 
 private struct RecurraLogo: View {
     @Environment(\.colorScheme) private var colorScheme
-    
+
     var body: some View {
         Image(colorScheme == .dark ? "BasicIconWhite" : "BasicIconBlack")
             .resizable()

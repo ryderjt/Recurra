@@ -17,7 +17,7 @@ final class HotKeyCenter {
         var eventSpec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard),
                                       eventKind: UInt32(kEventHotKeyPressed))
 
-        let status = InstallEventHandler(GetApplicationEventTarget(), 
+        let status = InstallEventHandler(GetApplicationEventTarget(),
                                         hotKeyEventHandler,
                                         1, &eventSpec,
                                         UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()),
@@ -79,7 +79,9 @@ final class HotKeyCenter {
     }
 }
 
-private func hotKeyEventHandler(nextHandler: EventHandlerCallRef?, event: EventRef?, userData: UnsafeMutableRawPointer?) -> OSStatus {
+private func hotKeyEventHandler(nextHandler: EventHandlerCallRef?, 
+                                event: EventRef?, 
+                                userData: UnsafeMutableRawPointer?) -> OSStatus {
     guard let event = event, let userData = userData else { return noErr }
     let center = Unmanaged<HotKeyCenter>.fromOpaque(userData).takeUnretainedValue()
     return center.handle(event: event)
@@ -194,7 +196,7 @@ final class Recorder: ObservableObject {
             partialMask | (CGEventMask(1) << CGEventMask(eventType.rawValue))
         }
 
-        let callback: CGEventTapCallBack = { _, _, event, userInfo in
+        let callback: CGEventTapCallBack = { _, type, event, userInfo in
             guard let userInfo = userInfo else { return nil }
             let recorder = Unmanaged<Recorder>.fromOpaque(userInfo).takeUnretainedValue()
             return recorder.handleIncoming(event: event, type: type)
@@ -331,7 +333,7 @@ final class Recorder: ObservableObject {
         let finalKeyCode = keyCode == 0 ? UInt32(kVK_ANSI_R) : keyCode
         let finalModifiers = modifiers == 0 ? UInt32(cmdKey | optionKey) : modifiers
 
-        hotKeyIdentifier = HotKeyCenter.shared.register(keyCode: finalKeyCode, 
+        hotKeyIdentifier = HotKeyCenter.shared.register(keyCode: finalKeyCode,
                                                         modifiers: finalModifiers) { [weak self] in
             DispatchQueue.main.async {
                 self?.toggleRecording()

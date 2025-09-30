@@ -8,7 +8,7 @@ private struct SettingsView: View {
     @AppStorage(AppSettingsKey.defaultTimelineDuration) private var defaultTimelineDuration = 3.0
     @AppStorage(AppSettingsKey.keyframeSnapEnabled) private var isKeyframeSnappingEnabled = true
     @AppStorage(AppSettingsKey.keyframeSnapInterval) private var keyframeSnapInterval = 0.05
-    
+
     // Hotkey settings
     @AppStorage(AppSettingsKey.recordingHotkeyKeyCode) private var recordingKeyCode = Int(kVK_ANSI_R)
     @AppStorage(AppSettingsKey.recordingHotkeyModifiers) private var recordingModifiers = Int(cmdKey | optionKey)
@@ -28,7 +28,7 @@ private struct SettingsView: View {
                 VStack(spacing: 16) {
                     RecurraLogo()
                         .frame(width: 64, height: 64)
-                    
+
                     Image(systemName: "gearshape.fill")
                         .font(.system(size: 32, weight: .medium))
                         .foregroundStyle(.blue)
@@ -45,8 +45,8 @@ private struct SettingsView: View {
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                         HStack(spacing: 12) {
-                            TextField("Seconds", 
-                                      value: $defaultTimelineDuration, 
+                            TextField("Seconds",
+                                      value: $defaultTimelineDuration,
                                       format: .number.precision(.fractionLength(2)))
                                 .textFieldStyle(.roundedBorder)
                                 .frame(width: 100)
@@ -68,11 +68,11 @@ private struct SettingsView: View {
                                 .disabled(!isKeyframeSnappingEnabled)
                         }
                     }
-                    
+
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Keyboard Shortcuts")
                             .font(.headline)
-                        
+
                         HotkeyPicker(
                             title: "Recording",
                             description: "Start or stop recording a macro",
@@ -89,7 +89,7 @@ private struct SettingsView: View {
                         .onChange(of: recordingKeyEquivalent) { _ in
                             NotificationCenter.default.post(name: .hotkeySettingsChanged, object: nil)
                         }
-                        
+
                         HotkeyPicker(
                             title: "Playback",
                             description: "Replay the most recent macro",
@@ -153,7 +153,7 @@ private struct HotkeyPicker: View {
     @Binding var keyEquivalent: String
     @State private var isRecording = false
     @State private var eventMonitor: Any?
-    
+
     private var displayString: String {
         var result = ""
         let modFlags = UInt32(modifiers)
@@ -164,7 +164,7 @@ private struct HotkeyPicker: View {
         result += keyEquivalent.uppercased()
         return result
     }
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
@@ -172,7 +172,7 @@ private struct HotkeyPicker: View {
             Text(description)
                 .font(.footnote)
                 .foregroundStyle(.secondary)
-            
+
             HStack {
                 Button(action: startRecording) {
                     HStack {
@@ -185,7 +185,7 @@ private struct HotkeyPicker: View {
                 }
                 .buttonStyle(.bordered)
                 .disabled(isRecording)
-                
+
                 if !isRecording {
                     Button("Reset") {
                         keyCode = Int(kVK_ANSI_R)
@@ -200,7 +200,7 @@ private struct HotkeyPicker: View {
             stopRecording()
         }
     }
-    
+
     private func startRecording() {
         isRecording = true
         eventMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
@@ -208,32 +208,32 @@ private struct HotkeyPicker: View {
             let modifierSubset = deviceIndependent.intersection([.command, .option, .control, .shift])
             let primaryModifiers = modifierSubset.intersection([.command, .option, .control])
             guard !primaryModifiers.isEmpty else { return nil }
-            
+
             guard let characters = event.charactersIgnoringModifiers, let first = characters.first else {
                 return nil
             }
-            
+
             let uppercase = String(first).uppercased()
             guard let scalar = uppercase.unicodeScalars.first,
                   CharacterSet.letters.contains(scalar) || CharacterSet.decimalDigits.contains(scalar) else {
                 return nil
             }
-            
+
             var carbonModifiers: UInt32 = 0
             if modifierSubset.contains(.command) { carbonModifiers |= UInt32(cmdKey) }
             if modifierSubset.contains(.option) { carbonModifiers |= UInt32(optionKey) }
             if modifierSubset.contains(.control) { carbonModifiers |= UInt32(controlKey) }
             if modifierSubset.contains(.shift) { carbonModifiers |= UInt32(shiftKey) }
-            
+
             keyCode = Int(event.keyCode)
             modifiers = Int(carbonModifiers)
             keyEquivalent = uppercase.lowercased()
-            
+
             stopRecording()
             return nil
         }
     }
-    
+
     private func stopRecording() {
         isRecording = false
         if let monitor = eventMonitor {

@@ -18,8 +18,8 @@ struct RecurraApp: App {
         let replayer = Replayer(recorder: recorder, macroManager: manager)
         _replayer = StateObject(wrappedValue: replayer)
 
-        _menuBarController = StateObject(wrappedValue: MenuBarController(recorder: recorder, 
-                                                                        replayer: replayer, 
+        _menuBarController = StateObject(wrappedValue: MenuBarController(recorder: recorder,
+                                                                        replayer: replayer,
                                                                         macroManager: manager))
     }
 
