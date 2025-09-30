@@ -77,6 +77,7 @@ struct KeyboardAction: Equatable {
     func makeEvent(source: CGEventSource? = CGEventSource(stateID: .combinedSessionState)) -> CGEvent? {
         let isKeyDown = phase != .keyUp
         guard let event = CGEvent(keyboardEventSource: source, virtualKey: keyCode, keyDown: isKeyDown) else {
+            NSLog("Failed to create keyboard event for keyCode: %d, phase: %@", keyCode, phase.rawValue)
             return nil
         }
         event.flags = flags
@@ -141,6 +142,7 @@ struct MouseAction: Equatable {
                                    mouseType: eventType,
                                    mouseCursorPosition: location,
                                    mouseButton: button) else {
+            NSLog("Failed to create mouse event for phase: %@, button: %d, location: %@", phase.rawValue, button.rawValue, NSStringFromPoint(location))
             return nil
         }
         event.flags = flags

@@ -17,10 +17,14 @@ final class HotKeyCenter {
         var eventSpec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard),
                                       eventKind: UInt32(kEventHotKeyPressed))
 
-        InstallEventHandler(GetApplicationEventTarget(), hotKeyEventHandler,
-                            1, &eventSpec,
-                            UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()),
-                            &eventHandler)
+        let status = InstallEventHandler(GetApplicationEventTarget(), hotKeyEventHandler,
+                                        1, &eventSpec,
+                                        UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()),
+                                        &eventHandler)
+        
+        if status != noErr {
+            NSLog("Failed to install hotkey event handler: %d", status)
+        }
     }
 
     deinit {
@@ -180,7 +184,7 @@ final class Recorder: ObservableObject {
         }
 
         let callback: CGEventTapCallBack = { proxy, type, event, userInfo in
-            guard let userInfo = userInfo else { return Unmanaged.passUnretained(event) }
+            guard let userInfo = userInfo else { return nil }
             let recorder = Unmanaged<Recorder>.fromOpaque(userInfo).takeUnretainedValue()
             return recorder.handleIncoming(event: event, type: type)
         }
@@ -277,13 +281,22 @@ final class Recorder: ObservableObject {
         }
 
         let now = CFAbsoluteTimeGetCurrent()
-        let delay = now - lastEventTime
+        let delay = max(0, now - lastEventTime) // Ensure non-negative delay
         lastEventTime = now
         totalRecordingDuration = now - recordingStartTime
+
+        // Limit the number of events to prevent memory issues
+        guard currentRecording.count < 10000 else {
+            NSLog("Recording stopped: too many events captured")
+            stopRecording()
+            return Unmanaged.passUnretained(event)
+        }
 
         if let copiedEvent = event.copy() {
             let timedEvent = RecordedMacro.TimedEvent(delay: delay, event: copiedEvent)
             currentRecording.append(timedEvent)
+        } else {
+            NSLog("Failed to copy event during recording")
         }
 
         return Unmanaged.passUnretained(event)

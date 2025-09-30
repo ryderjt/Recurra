@@ -12,11 +12,13 @@ final class Replayer: ObservableObject {
     private let playbackQueue = DispatchQueue(label: "com.macroRecorder.playback")
     private var playbackHotKey: UInt32 = 0
     private var shouldCancelPlayback = false
+    private var cancellables: Set<AnyCancellable> = []
 
     init(recorder: Recorder?, macroManager: MacroManager) {
         self.recorder = recorder
         self.macroManager = macroManager
         registerHotKey()
+        observeHotkeySettings()
     }
 
     deinit {
@@ -40,9 +42,14 @@ final class Replayer: ObservableObject {
             guard let self else { return }
             for event in macro.events {
                 if self.shouldCancelPlayback { break }
-                if event.delay > 0 {
-                    Thread.sleep(forTimeInterval: event.delay)
+                
+                // Clamp delay to reasonable bounds to prevent excessive delays
+                let clampedDelay = max(0, min(event.delay, 10.0))
+                if clampedDelay > 0 {
+                    Thread.sleep(forTimeInterval: clampedDelay)
                 }
+                
+                // Post the event and check for errors
                 event.event.post(tap: .cghidEventTap)
             }
 
@@ -73,11 +80,37 @@ final class Replayer: ObservableObject {
     }
 
     private func registerHotKey() {
-        let modifiers = UInt32(cmdKey | optionKey)
-        playbackHotKey = HotKeyCenter.shared.register(keyCode: UInt32(kVK_ANSI_P), modifiers: modifiers) { [weak self] in
+        let defaults = UserDefaults.standard
+
+        // Get hotkey configuration from UserDefaults or use defaults
+        let keyCode = UInt32(defaults.integer(forKey: "settings.playbackHotkeyKeyCode"))
+        let modifiers = UInt32(defaults.integer(forKey: "settings.playbackHotkeyModifiers"))
+
+        // Use defaults if no values are stored
+        let finalKeyCode = keyCode == 0 ? UInt32(kVK_ANSI_P) : keyCode
+        let finalModifiers = modifiers == 0 ? UInt32(cmdKey | optionKey) : modifiers
+
+        playbackHotKey = HotKeyCenter.shared.register(keyCode: finalKeyCode, modifiers: finalModifiers) { [weak self] in
             DispatchQueue.main.async {
                 self?.togglePlayback()
             }
         }
+    }
+
+    func updateHotkey() {
+        // Unregister current hotkey
+        HotKeyCenter.shared.unregister(identifier: playbackHotKey)
+        // Register new hotkey
+        registerHotKey()
+    }
+
+    private func observeHotkeySettings() {
+        // Listen for hotkey settings changes
+        NotificationCenter.default.publisher(for: .hotkeySettingsChanged)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateHotkey()
+            }
+            .store(in: &cancellables)
     }
 }

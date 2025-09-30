@@ -120,6 +120,12 @@ struct MacroTimelineEditor: View {
     }
 
     private func updateDuration(to value: TimeInterval) {
+        // Ensure the value is finite and within reasonable bounds
+        guard value.isFinite && !value.isNaN else {
+            syncDurationInput()
+            return
+        }
+        
         let clamped = max(0.5, min(value, 120))
         draft.duration = clamped
         draft.clampDurationToKeyframes()
@@ -396,6 +402,9 @@ private struct KeyframeInspector: View {
         Binding(
             get: { keyframe.time },
             set: { newValue in
+                // Ensure the value is finite and within reasonable bounds
+                guard newValue.isFinite && !newValue.isNaN else { return }
+                
                 let snapped = snapConfiguration.apply(to: newValue)
                 let clamped = max(0, min(snapped, draft.duration))
                 draft.moveKeyframe(id: keyframe.id, to: clamped)

@@ -56,7 +56,6 @@ struct RecurraApp: App {
     }
 
     var body: some Scene {
-        let _ = menuBarController
         WindowGroup {
             MainView()
                 .environmentObject(macroManager)

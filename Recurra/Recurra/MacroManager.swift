@@ -44,6 +44,17 @@ final class MacroManager: ObservableObject {
     }
 
     func add(_ macro: RecordedMacro) {
+        // Validate macro before adding
+        guard !macro.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            NSLog("Cannot add macro with empty name")
+            return
+        }
+        
+        guard macro.duration >= 0 else {
+            NSLog("Cannot add macro with negative duration")
+            return
+        }
+        
         let insert = {
             self.macros.insert(macro, at: 0)
             self.persistCurrentState()
@@ -74,7 +85,15 @@ final class MacroManager: ObservableObject {
 
     func rename(_ macro: RecordedMacro, to newName: String) {
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
+        guard !trimmed.isEmpty else { 
+            NSLog("Cannot rename macro to empty name")
+            return 
+        }
+        
+        guard trimmed.count <= 100 else {
+            NSLog("Macro name too long (max 100 characters)")
+            return
+        }
 
         let update = {
             guard let index = self.macros.firstIndex(where: { $0.id == macro.id }) else { return }
@@ -133,17 +152,23 @@ final class MacroManager: ObservableObject {
 
     private func loadPersistedMacros() {
         persistenceQueue.async {
-            guard let data = try? Data(contentsOf: self.persistenceURL) else { return }
-            let decoder = JSONDecoder()
-            decoder.dateDecodingStrategy = .iso8601
             do {
+                let data = try Data(contentsOf: self.persistenceURL)
+                let decoder = JSONDecoder()
+                decoder.dateDecodingStrategy = .iso8601
                 let storedMacros = try decoder.decode([StoredMacro].self, from: data)
                 let macros = storedMacros.compactMap { $0.makeRecordedMacro() }
                 DispatchQueue.main.async {
                     self.macros = macros
                 }
             } catch {
-                NSLog("Failed to decode macros: %@", error.localizedDescription)
+                // File doesn't exist or is corrupted - start with empty array
+                if (error as NSError).code != NSFileReadNoSuchFileError {
+                    NSLog("Failed to load persisted macros: %@", error.localizedDescription)
+                }
+                DispatchQueue.main.async {
+                    self.macros = []
+                }
             }
         }
     }
@@ -151,15 +176,16 @@ final class MacroManager: ObservableObject {
     private func persistCurrentState() {
         let snapshot = macros
         persistenceQueue.async {
-            let encoder = JSONEncoder()
-            encoder.dateEncodingStrategy = .iso8601
-            let stored = snapshot.compactMap { StoredMacro(macro: $0) }
             do {
+                let encoder = JSONEncoder()
+                encoder.dateEncodingStrategy = .iso8601
+                let stored = snapshot.compactMap { StoredMacro(macro: $0) }
                 let data = try encoder.encode(stored)
                 try self.ensurePersistenceDirectoryExists()
                 try data.write(to: self.persistenceURL, options: .atomic)
             } catch {
                 NSLog("Failed to persist macros: %@", error.localizedDescription)
+                // Consider showing user notification for critical persistence failures
             }
         }
     }
