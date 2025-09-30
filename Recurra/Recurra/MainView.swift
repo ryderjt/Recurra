@@ -175,12 +175,18 @@ struct MainView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(alignment: .center, spacing: 16) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Recurra")
-                        .font(.largeTitle.bold())
-                    Text("Capture and replay keyboard and mouse flows with a minimalist workspace.")
-                        .foregroundStyle(.secondary)
+                HStack(alignment: .center, spacing: 12) {
+                    RecurraLogo()
+                        .frame(width: 48, height: 48)
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Recurra")
+                            .font(.largeTitle.bold())
+                        Text("Capture and replay keyboard and mouse flows with a minimalist workspace.")
+                            .foregroundStyle(.secondary)
+                    }
                 }
+                
                 Spacer()
                 Button {
                     isShowingSettings.toggle()
@@ -389,17 +395,20 @@ private struct EmptyMacroPlaceholder: View {
                                        systemImage: "square.and.pencil",
                                        description: Text("Record a macro to see it listed here."))
             } else {
-                VStack(spacing: 8) {
-                    Image(systemName: "square.and.pencil")
-                        .font(.system(size: 36, weight: .regular))
-                        .foregroundStyle(.secondary)
-                    Text("No recordings yet")
-                        .font(.title3.weight(.semibold))
-                    Text("Record a macro to see it listed here.")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 220)
+                VStack(spacing: 16) {
+                    RecurraLogo()
+                        .frame(width: 48, height: 48)
+                        .opacity(0.6)
+                    
+                    VStack(spacing: 8) {
+                        Text("No recordings yet")
+                            .font(.title3.weight(.semibold))
+                        Text("Record a macro to see it listed here.")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: 220)
+                    }
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.vertical, 36)
@@ -756,9 +765,14 @@ private struct PermissionRequestView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 24) {
-                Image(systemName: "hand.raised")
-                    .font(.system(size: 54, weight: .medium))
-                    .foregroundStyle(.orange)
+                VStack(spacing: 16) {
+                    RecurraLogo()
+                        .frame(width: 64, height: 64)
+                    
+                    Image(systemName: "hand.raised")
+                        .font(.system(size: 32, weight: .medium))
+                        .foregroundStyle(.orange)
+                }
 
                 Text("Grant Accessibility Access")
                     .font(.title2.weight(.semibold))
@@ -911,9 +925,14 @@ private struct SettingsView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 24) {
-                Image(systemName: "gearshape.fill")
-                    .font(.system(size: 54, weight: .medium))
-                    .foregroundStyle(.blue)
+                VStack(spacing: 16) {
+                    RecurraLogo()
+                        .frame(width: 64, height: 64)
+                    
+                    Image(systemName: "gearshape.fill")
+                        .font(.system(size: 32, weight: .medium))
+                        .foregroundStyle(.blue)
+                }
 
                 Text("Settings")
                     .font(.title2.weight(.semibold))
@@ -1288,6 +1307,17 @@ private struct Palette {
 
     var rowButtonStroke: Color {
         colorScheme == .dark ? Color.white.opacity(0.2) : Color.black.opacity(0.08)
+    }
+}
+
+private struct RecurraLogo: View {
+    @Environment(\.colorScheme) private var colorScheme
+    
+    var body: some View {
+        Image(colorScheme == .dark ? "BasicIconWhite" : "BasicIconBlack")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
+            .frame(width: 48, height: 48)
     }
 }
 

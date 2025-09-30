@@ -4,8 +4,8 @@ import Combine
 final class MenuBarController: NSObject, ObservableObject {
     private let statusItem: NSStatusItem
     private lazy var idleStatusIcon: NSImage? = {
-        guard let image = Bundle.main.image(forResource: "StatusBarIcon") else { return nil }
-        return image.tinted(with: .white)
+        guard let image = Bundle.main.image(forResource: "BasicIconBlack") else { return nil }
+        return image
     }()
     private let recorder: Recorder
     private let replayer: Replayer
