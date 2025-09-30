@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Recurra Logo](Recurra/Assets.xcassets/AppIcon.appiconset/512.png)
+# 🎯 Recurra
 
 **A powerful macOS macro recorder and automation tool built with SwiftUI**
 
