@@ -12,6 +12,7 @@ B2E5D0C42B94D3F200A0F11A /* MacroManager.swift in Sources */ = {isa = PBXBuildFi
 B2E5D0C62B94D3F200A0F11A /* MenuBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0C52B94D3F200A0F11A /* MenuBar.swift */; };
 B2E5D0B42B94D2C900A0F11A /* Recorder.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B32B94D2C900A0F11A /* Recorder.swift */; };
 B2E5D0B62B94D2C900A0F11A /* Replayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B52B94D2C900A0F11A /* Replayer.swift */; };
+B2E5D0B72B94D2C900A0F11A /* AccessibilityPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E5D0B72B94D2C900A0F11A /* AccessibilityPermission.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@ B2E5D0C52B94D3F200A0F11A /* MenuBar.swift */ = {isa = PBXFileReference; lastKnow
 B2E5D0C72B94D3F200A0F11A /* Recurra.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Recurra.entitlements; sourceTree = "<group>"; };
 B2E5D0B32B94D2C900A0F11A /* Recorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Recorder.swift; sourceTree = "<group>"; };
 B2E5D0B52B94D2C900A0F11A /* Replayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Replayer.swift; sourceTree = "<group>"; };
+B2E5D0B72B94D2C900A0F11A /* AccessibilityPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityPermission.swift; sourceTree = "<group>"; };
 B2E5D0B82B94D2C900A0F11A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -52,6 +54,7 @@ children = (
             B2E5D0C52B94D3F200A0F11A /* MenuBar.swift */,
             B2E5D0B32B94D2C900A0F11A /* Recorder.swift */,
             B2E5D0B52B94D2C900A0F11A /* Replayer.swift */,
+            B2E5D0B72B94D2C900A0F11A /* AccessibilityPermission.swift */,
             B2E5D0B82B94D2C900A0F11A /* Info.plist */,
             B2E5D0C72B94D3F200A0F11A /* Recurra.entitlements */,
 );
@@ -141,6 +144,7 @@ files = (
             B2E5D0C42B94D3F200A0F11A /* MacroManager.swift in Sources */,
             B2E5D0C22B94D3F200A0F11A /* MainView.swift in Sources */,
             B2E5D0B02B94D2C900A0F11A /* App.swift in Sources */,
+            B2E5D0B72B94D2C900A0F11A /* AccessibilityPermission.swift in Sources */,
 );
 runOnlyForDeploymentPostprocessing = 0;
 };

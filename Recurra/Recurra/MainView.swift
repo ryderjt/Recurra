@@ -12,8 +12,8 @@ struct MainView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(colors: [Color(red: 0.86, green: 0.91, blue: 0.99),
-                                    Color(red: 0.58, green: 0.68, blue: 0.98)],
+            LinearGradient(colors: [Color(red: 0.12, green: 0.12, blue: 0.15),
+                                    Color(red: 0.08, green: 0.08, blue: 0.12)],
                            startPoint: .topLeading,
                            endPoint: .bottomTrailing)
                 .ignoresSafeArea()
@@ -80,7 +80,7 @@ struct MainView: View {
             .scrollContentBackground(.hidden)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.ultraThinMaterial)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 0))
     }
 
     private var detail: some View {
@@ -143,8 +143,8 @@ struct MainView: View {
                 }
                 .padding(24)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.white.opacity(0.25)))
-                .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Color.white.opacity(0.35)))
+                .background(RoundedRectangle(cornerRadius: 20, style: .continuous).fill(Color.white.opacity(0.08)))
+                .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(Color.white.opacity(0.15)))
             }
 
             Spacer()
@@ -292,11 +292,11 @@ private struct MacroRow: View {
         .contentShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(isSelected ? Color.white.opacity(0.35) : Color.clear)
+                .fill(isSelected ? Color.white.opacity(0.15) : Color.clear)
         )
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.white.opacity(isSelected ? 0.6 : 0.25))
+                .stroke(Color.white.opacity(isSelected ? 0.3 : 0.1))
         )
         .listRowBackground(Color.clear)
         .contextMenu {
@@ -360,8 +360,8 @@ private struct MacroDetailCard: View {
         }
         .padding(28)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 24, style: .continuous).fill(Color.white.opacity(0.32)))
-        .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(Color.white.opacity(0.45)))
+        .background(RoundedRectangle(cornerRadius: 24, style: .continuous).fill(Color.white.opacity(0.08)))
+        .overlay(RoundedRectangle(cornerRadius: 24, style: .continuous).stroke(Color.white.opacity(0.15)))
     }
 
     private func durationString(for macro: RecordedMacro) -> String {
@@ -389,7 +389,7 @@ private struct StatusBadge: View {
     private var color: Color {
         switch status {
         case .idle:
-            return Color.green.opacity(0.8)
+            return Color.green
         case .recording:
             return Color.red
         case .replaying:
@@ -411,8 +411,8 @@ private struct PermissionPrompt: View {
                 .buttonStyle(SubtleButtonStyle())
         }
         .padding(14)
-        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.white.opacity(0.25)))
-        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Color.white.opacity(0.4)))
+        .background(RoundedRectangle(cornerRadius: 14, style: .continuous).fill(Color.white.opacity(0.08)))
+        .overlay(RoundedRectangle(cornerRadius: 14, style: .continuous).stroke(Color.white.opacity(0.15)))
     }
 }
 
@@ -431,8 +431,8 @@ private struct ShortcutBadge: View {
         }
         .padding(12)
         .frame(maxWidth: 240)
-        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color.white.opacity(0.2)))
-        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Color.white.opacity(0.35)))
+        .background(RoundedRectangle(cornerRadius: 12, style: .continuous).fill(Color.white.opacity(0.08)))
+        .overlay(RoundedRectangle(cornerRadius: 12, style: .continuous).stroke(Color.white.opacity(0.15)))
     }
 }
 
@@ -460,7 +460,7 @@ private struct GradientButtonStyle: ButtonStyle {
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
-                        .stroke(Color.white.opacity(0.45))
+                        .stroke(Color.white.opacity(0.2))
                 )
                 .shadow(color: Color.black.opacity(hovering ? 0.18 : 0.12), radius: hovering ? 12 : 8, x: 0, y: hovering ? 6 : 4)
                 .scaleEffect(configuration.isPressed ? 0.97 : 1)
@@ -473,9 +473,9 @@ private struct GradientButtonStyle: ButtonStyle {
 
         private var gradientColors: [Color] {
             if isDestructive {
-                return [Color(red: 0.97, green: 0.58, blue: 0.58), Color(red: 0.86, green: 0.21, blue: 0.34)]
+                return [Color(red: 0.8, green: 0.3, blue: 0.3), Color(red: 0.6, green: 0.1, blue: 0.2)]
             }
-            return [Color(red: 0.6, green: 0.75, blue: 1.0), Color(red: 0.37, green: 0.55, blue: 0.98)]
+            return [Color(red: 0.2, green: 0.5, blue: 0.9), Color(red: 0.1, green: 0.3, blue: 0.8)]
         }
     }
 }
@@ -498,11 +498,11 @@ private struct SubtleButtonStyle: ButtonStyle {
                 .padding(.horizontal, 22)
                 .background(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.white.opacity(hovering ? 0.28 : 0.18))
+                        .fill(Color.white.opacity(hovering ? 0.15 : 0.08))
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.white.opacity(0.35))
+                        .stroke(Color.white.opacity(0.2))
                 )
                 .foregroundStyle(isDestructive ? Color.red : Color.primary)
                 .shadow(color: Color.black.opacity(hovering ? 0.15 : 0.08), radius: hovering ? 10 : 4, x: 0, y: hovering ? 4 : 2)
@@ -521,10 +521,10 @@ private struct RowIconButtonStyle: ButtonStyle {
         configuration.label
             .padding(8)
             .background(
-                Circle().fill(Color.white.opacity(configuration.isPressed ? 0.35 : 0.2))
+                Circle().fill(Color.white.opacity(configuration.isPressed ? 0.2 : 0.1))
             )
             .overlay(
-                Circle().stroke(Color.white.opacity(0.35))
+                Circle().stroke(Color.white.opacity(0.2))
             )
             .foregroundStyle(.primary)
             .scaleEffect(configuration.isPressed ? 0.9 : 1)

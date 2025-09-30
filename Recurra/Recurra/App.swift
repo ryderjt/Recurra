@@ -28,6 +28,7 @@ struct RecurraApp: App {
                 .environmentObject(recorder)
                 .environmentObject(replayer)
                 .environmentObject(menuBarController)
+                .preferredColorScheme(.dark)
         }
         .commands {
             CommandMenu("Macro Controls") {
