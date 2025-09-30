@@ -607,7 +607,9 @@ private struct MouseButtonOption: Identifiable {
         MouseButtonOption(button: .right, label: "Right"),
         MouseButtonOption(button: CGMouseButton(rawValue: 2) ?? .left, label: "Other")
     ]
-}#if DEBUG
+}
+
+#if DEBUG
 #Preview {
     struct PreviewHost: View {
         @State private var draft = MacroTimelineDraft()
