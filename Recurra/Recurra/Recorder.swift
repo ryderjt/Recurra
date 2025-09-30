@@ -302,22 +302,22 @@ final class Recorder: ObservableObject {
 
     private func registerHotKey() {
         let defaults = UserDefaults.standard
-        
+
         // Get hotkey configuration from UserDefaults or use defaults
         let keyCode = UInt32(defaults.integer(forKey: "settings.recordingHotkeyKeyCode"))
         let modifiers = UInt32(defaults.integer(forKey: "settings.recordingHotkeyModifiers"))
-        
+
         // Use defaults if no values are stored
         let finalKeyCode = keyCode == 0 ? UInt32(kVK_ANSI_R) : keyCode
         let finalModifiers = modifiers == 0 ? UInt32(cmdKey | optionKey) : modifiers
-        
+
         hotKeyIdentifier = HotKeyCenter.shared.register(keyCode: finalKeyCode, modifiers: finalModifiers) { [weak self] in
             DispatchQueue.main.async {
                 self?.toggleRecording()
             }
         }
     }
-    
+
     func updateHotkey() {
         // Unregister current hotkey
         HotKeyCenter.shared.unregister(identifier: hotKeyIdentifier)
@@ -339,7 +339,7 @@ final class Recorder: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-        
+
         // Listen for hotkey settings changes
         NotificationCenter.default.publisher(for: .hotkeySettingsChanged)
             .receive(on: RunLoop.main)

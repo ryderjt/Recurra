@@ -20,35 +20,35 @@ struct RecurraApp: App {
 
         _menuBarController = StateObject(wrappedValue: MenuBarController(recorder: recorder, replayer: replayer, macroManager: manager))
     }
-    
+
     private var recordingKeyboardShortcut: KeyboardShortcut {
         let defaults = UserDefaults.standard
         let keyEquivalent = defaults.string(forKey: "settings.recordingHotkeyKeyEquivalent") ?? "r"
         let modifiers = UInt32(defaults.integer(forKey: "settings.recordingHotkeyModifiers"))
-        
+
         var eventModifiers: SwiftUI.EventModifiers = []
         if modifiers & UInt32(controlKey) != 0 { eventModifiers.insert(.control) }
         if modifiers & UInt32(optionKey) != 0 { eventModifiers.insert(.option) }
         if modifiers & UInt32(shiftKey) != 0 { eventModifiers.insert(.shift) }
         if modifiers & UInt32(cmdKey) != 0 { eventModifiers.insert(.command) }
-        
+
         guard let character = keyEquivalent.first else {
             return KeyboardShortcut("r", modifiers: [.command, .option])
         }
         return KeyboardShortcut(KeyEquivalent(character), modifiers: eventModifiers)
     }
-    
+
     private var playbackKeyboardShortcut: KeyboardShortcut {
         let defaults = UserDefaults.standard
         let keyEquivalent = defaults.string(forKey: "settings.playbackHotkeyKeyEquivalent") ?? "p"
         let modifiers = UInt32(defaults.integer(forKey: "settings.playbackHotkeyModifiers"))
-        
+
         var eventModifiers: SwiftUI.EventModifiers = []
         if modifiers & UInt32(controlKey) != 0 { eventModifiers.insert(.control) }
         if modifiers & UInt32(optionKey) != 0 { eventModifiers.insert(.option) }
         if modifiers & UInt32(shiftKey) != 0 { eventModifiers.insert(.shift) }
         if modifiers & UInt32(cmdKey) != 0 { eventModifiers.insert(.command) }
-        
+
         guard let character = keyEquivalent.first else {
             return KeyboardShortcut("p", modifiers: [.command, .option])
         }
