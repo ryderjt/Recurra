@@ -49,7 +49,7 @@ struct MacroTimelineEditor: View {
 
                 Spacer()
 
-                if let selection, let _ = draft.keyframes.first(where: { $0.id == selection }) {
+                if let selection, draft.keyframes.first(where: { $0.id == selection }) != nil {
                     Button(role: .destructive, action: deleteSelection) {
                         Label("Delete", systemImage: "trash")
                     }
@@ -125,7 +125,7 @@ struct MacroTimelineEditor: View {
             syncDurationInput()
             return
         }
-        
+
         let clamped = max(0.5, min(value, 120))
         draft.duration = clamped
         draft.clampDurationToKeyframes()
@@ -251,17 +251,17 @@ private struct TimelineBackground: View {
                 ForEach(0...totalTicks, id: \.self) { tick in
                     let time = Double(tick) * tickSpacing
                     let ratio = time / effectiveDuration
-                    let x = CGFloat(ratio) * width
+                    let xPosition = CGFloat(ratio) * width
                     Path { path in
-                        path.move(to: CGPoint(x: x, y: baseline - 40))
-                        path.addLine(to: CGPoint(x: x, y: baseline + 28))
+                        path.move(to: CGPoint(x: xPosition, y: baseline - 40))
+                        path.addLine(to: CGPoint(x: xPosition, y: baseline + 28))
                     }
                     .stroke(Color.secondary.opacity(tick % 5 == 0 ? 0.45 : 0.2), lineWidth: tick % 5 == 0 ? 1.5 : 1)
 
                     Text(timeLabel(for: time))
                         .font(.caption2)
                         .foregroundStyle(.secondary)
-                        .position(x: x, y: baseline - 48)
+                        .position(x: xPosition, y: baseline - 48)
                 }
             }
         }
@@ -404,7 +404,7 @@ private struct KeyframeInspector: View {
             set: { newValue in
                 // Ensure the value is finite and within reasonable bounds
                 guard newValue.isFinite && !newValue.isNaN else { return }
-                
+
                 let snapped = snapConfiguration.apply(to: newValue)
                 let clamped = max(0, min(snapped, draft.duration))
                 draft.moveKeyframe(id: keyframe.id, to: clamped)
@@ -454,61 +454,73 @@ private struct KeyframeInspector: View {
 
     private func mouseInspector(action: MouseAction) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Picker("Phase", selection: Binding(get: {
-                action.phase
-            }, set: { newValue in
-                draft.updateMouseAction(id: keyframe.id) { action in
-                    action.phase = newValue
-                }
-            })) {
-                ForEach(MouseAction.Phase.allCases) { phase in
-                    Text(phase.rawValue)
-                        .tag(phase)
-                }
+            phasePicker(for: action)
+            buttonPicker(for: action)
+            coordinateFields(for: action)
+            modifierFlagsEditor(for: action)
+        }
+    }
+
+    private func phasePicker(for action: MouseAction) -> some View {
+        Picker("Phase", selection: Binding(get: {
+            action.phase
+        }, set: { newValue in
+            draft.updateMouseAction(id: keyframe.id) { action in
+                action.phase = newValue
             }
-            .pickerStyle(.segmented)
-
-            HStack(spacing: 14) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Button")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    Picker("Button", selection: Binding(get: {
-                        action.button
-                    }, set: { newValue in
-                        draft.updateMouseAction(id: keyframe.id) { action in
-                            action.button = newValue
-                        }
-                    })) {
-                        ForEach(MouseButtonOption.all) { option in
-                            Text(option.label)
-                                .tag(option.button)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                }
-
-                Spacer()
+        })) {
+            ForEach(MouseAction.Phase.allCases) { phase in
+                Text(phase.rawValue)
+                    .tag(phase)
             }
+        }
+        .pickerStyle(.segmented)
+    }
 
-            HStack(spacing: 14) {
-                coordinateField(title: "X", value: action.location.x) { newValue in
+    private func buttonPicker(for action: MouseAction) -> some View {
+        HStack(spacing: 14) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Button")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Picker("Button", selection: Binding(get: {
+                    action.button
+                }, set: { newValue in
                     draft.updateMouseAction(id: keyframe.id) { action in
-                        action.location.x = newValue
+                        action.button = newValue
+                    }
+                })) {
+                    ForEach(MouseButtonOption.all) { option in
+                        Text(option.label)
+                            .tag(option.button)
                     }
                 }
+                .pickerStyle(.segmented)
+            }
+            Spacer()
+        }
+    }
 
-                coordinateField(title: "Y", value: action.location.y) { newValue in
-                    draft.updateMouseAction(id: keyframe.id) { action in
-                        action.location.y = newValue
-                    }
+    private func coordinateFields(for action: MouseAction) -> some View {
+        HStack(spacing: 14) {
+            coordinateField(title: "X", value: action.location.x) { newValue in
+                draft.updateMouseAction(id: keyframe.id) { action in
+                    action.location.x = newValue
                 }
             }
 
-            ModifierFlagsEditor(flags: action.flags) { newFlags in
+            coordinateField(title: "Y", value: action.location.y) { newValue in
                 draft.updateMouseAction(id: keyframe.id) { action in
-                    action.flags = newFlags
+                    action.location.y = newValue
                 }
+            }
+        }
+    }
+
+    private func modifierFlagsEditor(for action: MouseAction) -> some View {
+        ModifierFlagsEditor(flags: action.flags) { newFlags in
+            draft.updateMouseAction(id: keyframe.id) { action in
+                action.flags = newFlags
             }
         }
     }
@@ -601,7 +613,7 @@ private struct MouseButtonOption: Identifiable {
 #Preview {
     struct PreviewHost: View {
         @State private var draft = MacroTimelineDraft()
-        @State private var selection: UUID? = nil
+        @State private var selection: UUID?
 
         var body: some View {
             MacroTimelineEditor(draft: $draft, selection: $selection)

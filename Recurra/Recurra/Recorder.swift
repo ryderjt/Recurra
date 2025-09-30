@@ -17,11 +17,12 @@ final class HotKeyCenter {
         var eventSpec = EventTypeSpec(eventClass: OSType(kEventClassKeyboard),
                                       eventKind: UInt32(kEventHotKeyPressed))
 
-        let status = InstallEventHandler(GetApplicationEventTarget(), hotKeyEventHandler,
+        let status = InstallEventHandler(GetApplicationEventTarget(), 
+                                        hotKeyEventHandler,
                                         1, &eventSpec,
                                         UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque()),
                                         &eventHandler)
-        
+
         if status != noErr {
             NSLog("Failed to install hotkey event handler: %d", status)
         }
@@ -151,7 +152,11 @@ final class Recorder: ObservableObject {
 
     func toggleRecording() {
         guard !isReplaying else { return }
-        isRecording ? stopRecording() : startRecording()
+        if isRecording {
+            stopRecording()
+        } else {
+            startRecording()
+        }
     }
 
     func startRecording() {
@@ -163,44 +168,48 @@ final class Recorder: ObservableObject {
             return
         }
 
-        let eventTypes: [CGEventType] = [
-            .keyDown,
-            .keyUp,
-            .flagsChanged,
-            .leftMouseDown,
-            .leftMouseUp,
-            .rightMouseDown,
-            .rightMouseUp,
-            .otherMouseDown,
-            .otherMouseUp,
-            .mouseMoved,
-            .scrollWheel,
-            .leftMouseDragged,
-            .rightMouseDragged,
-            .otherMouseDragged
-        ]
-        let mask = eventTypes.reduce(CGEventMask(0)) { partialMask, eventType in
-            partialMask | (CGEventMask(1) << CGEventMask(eventType.rawValue))
-        }
-
-        let callback: CGEventTapCallBack = { proxy, type, event, userInfo in
-            guard let userInfo = userInfo else { return nil }
-            let recorder = Unmanaged<Recorder>.fromOpaque(userInfo).takeUnretainedValue()
-            return recorder.handleIncoming(event: event, type: type)
-        }
-
-        guard let tap = CGEvent.tapCreate(tap: .cgSessionEventTap,
-                                          place: .headInsertEventTap,
-                                          options: .defaultTap,
-                                          eventsOfInterest: mask,
-                                          callback: callback,
-                                          userInfo: UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())) else {
+        guard let tap = createEventTap() else {
             DispatchQueue.main.async {
                 self.status = .permissionDenied
             }
             return
         }
 
+        setupRecordingState()
+        setupEventTap(tap)
+
+        DispatchQueue.main.async {
+            self.status = .recording
+        }
+    }
+
+    private func createEventTap() -> CFMachPort? {
+        let eventTypes: [CGEventType] = [
+            .keyDown, .keyUp, .flagsChanged,
+            .leftMouseDown, .leftMouseUp, .rightMouseDown, .rightMouseUp,
+            .otherMouseDown, .otherMouseUp, .mouseMoved, .scrollWheel,
+            .leftMouseDragged, .rightMouseDragged, .otherMouseDragged
+        ]
+        let mask = eventTypes.reduce(CGEventMask(0)) { partialMask, eventType in
+            partialMask | (CGEventMask(1) << CGEventMask(eventType.rawValue))
+        }
+
+        let callback: CGEventTapCallBack = { _, _, event, userInfo in
+            guard let userInfo = userInfo else { return nil }
+            let recorder = Unmanaged<Recorder>.fromOpaque(userInfo).takeUnretainedValue()
+            return recorder.handleIncoming(event: event, type: type)
+        }
+
+        return CGEvent.tapCreate(tap: .cgSessionEventTap,
+                                place: .headInsertEventTap,
+                                options: .defaultTap,
+                                eventsOfInterest: mask,
+                                callback: callback,
+                                userInfo: UnsafeMutableRawPointer(
+                                    Unmanaged.passUnretained(self).toOpaque()))
+    }
+
+    private func setupRecordingState() {
         recordingStartTime = CFAbsoluteTimeGetCurrent()
         lastEventTime = recordingStartTime
         currentRecording.removeAll(keepingCapacity: true)
@@ -209,17 +218,15 @@ final class Recorder: ObservableObject {
             currentRecordingName = Recorder.defaultName(for: recordingCount)
         }
         totalRecordingDuration = 0
+    }
 
+    private func setupEventTap(_ tap: CFMachPort) {
         eventTap = tap
         runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
         if let source = runLoopSource {
             CFRunLoopAddSource(CFRunLoopGetCurrent(), source, .commonModes)
         }
         CGEvent.tapEnable(tap: tap, enable: true)
-
-        DispatchQueue.main.async {
-            self.status = .recording
-        }
     }
 
     func stopRecording() {
@@ -324,7 +331,8 @@ final class Recorder: ObservableObject {
         let finalKeyCode = keyCode == 0 ? UInt32(kVK_ANSI_R) : keyCode
         let finalModifiers = modifiers == 0 ? UInt32(cmdKey | optionKey) : modifiers
 
-        hotKeyIdentifier = HotKeyCenter.shared.register(keyCode: finalKeyCode, modifiers: finalModifiers) { [weak self] in
+        hotKeyIdentifier = HotKeyCenter.shared.register(keyCode: finalKeyCode, 
+                                                        modifiers: finalModifiers) { [weak self] in
             DispatchQueue.main.async {
                 self?.toggleRecording()
             }

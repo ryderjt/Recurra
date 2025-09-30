@@ -49,12 +49,12 @@ final class MacroManager: ObservableObject {
             NSLog("Cannot add macro with empty name")
             return
         }
-        
+
         guard macro.duration >= 0 else {
             NSLog("Cannot add macro with negative duration")
             return
         }
-        
+
         let insert = {
             self.macros.insert(macro, at: 0)
             self.persistCurrentState()
@@ -85,11 +85,11 @@ final class MacroManager: ObservableObject {
 
     func rename(_ macro: RecordedMacro, to newName: String) {
         let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { 
+        guard !trimmed.isEmpty else {
             NSLog("Cannot rename macro to empty name")
-            return 
+            return
         }
-        
+
         guard trimmed.count <= 100 else {
             NSLog("Macro name too long (max 100 characters)")
             return
@@ -202,7 +202,8 @@ final class MacroManager: ObservableObject {
         if let support = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
             baseDirectory = support
         } else {
-            baseDirectory = fileManager.homeDirectoryForCurrentUser.appendingPathComponent("Library/Application Support", isDirectory: true)
+            baseDirectory = fileManager.homeDirectoryForCurrentUser
+                .appendingPathComponent("Library/Application Support", isDirectory: true)
         }
         return baseDirectory
             .appendingPathComponent("Recurra", isDirectory: true)

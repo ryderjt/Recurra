@@ -123,7 +123,6 @@ final class MenuBarController: NSObject, ObservableObject {
         button.image?.isTemplate = false
     }
 
-
     @objc private func toggleRecording() {
         recorder.toggleRecording()
     }

@@ -142,7 +142,8 @@ struct MouseAction: Equatable {
                                    mouseType: eventType,
                                    mouseCursorPosition: location,
                                    mouseButton: button) else {
-            NSLog("Failed to create mouse event for phase: %@, button: %d, location: %@", phase.rawValue, button.rawValue, NSStringFromPoint(location))
+            NSLog("Failed to create mouse event for phase: %@, button: %d, location: %@", 
+                  phase.rawValue, button.rawValue, NSStringFromPoint(location))
             return nil
         }
         event.flags = flags

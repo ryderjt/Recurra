@@ -42,13 +42,13 @@ final class Replayer: ObservableObject {
             guard let self else { return }
             for event in macro.events {
                 if self.shouldCancelPlayback { break }
-                
+
                 // Clamp delay to reasonable bounds to prevent excessive delays
                 let clampedDelay = max(0, min(event.delay, 10.0))
                 if clampedDelay > 0 {
                     Thread.sleep(forTimeInterval: clampedDelay)
                 }
-                
+
                 // Post the event and check for errors
                 event.event.post(tap: .cghidEventTap)
             }
