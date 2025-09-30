@@ -1,0 +1,109 @@
+{
+  "" : {
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recurra-primary.dia",
+    "emit-module-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recurra-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recurra-primary-emit-module.dia",
+    "pch" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recurra-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recurra-primary.swiftdeps"
+  },
+  "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/AccessibilityPermission.swift" : {
+    "const-values" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/AccessibilityPermission.swiftconstvalues",
+    "dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/AccessibilityPermission.d",
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/AccessibilityPermission.dia",
+    "index-unit-output-path" : "/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/AccessibilityPermission.o",
+    "llvm-bc" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/AccessibilityPermission.bc",
+    "object" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/AccessibilityPermission.o",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/AccessibilityPermission.swiftdeps",
+    "swiftmodule" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/AccessibilityPermission~partial.swiftmodule"
+  },
+  "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/App.swift" : {
+    "const-values" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/App.swiftconstvalues",
+    "dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/App.d",
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/App.dia",
+    "index-unit-output-path" : "/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/App.o",
+    "llvm-bc" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/App.bc",
+    "object" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/App.o",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/App.swiftdeps",
+    "swiftmodule" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/App~partial.swiftmodule"
+  },
+  "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/MacroManager.swift" : {
+    "const-values" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroManager.swiftconstvalues",
+    "dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroManager.d",
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroManager.dia",
+    "index-unit-output-path" : "/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroManager.o",
+    "llvm-bc" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroManager.bc",
+    "object" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroManager.o",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroManager.swiftdeps",
+    "swiftmodule" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroManager~partial.swiftmodule"
+  },
+  "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/MacroTimelineEditor.swift" : {
+    "const-values" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineEditor.swiftconstvalues",
+    "dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineEditor.d",
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineEditor.dia",
+    "index-unit-output-path" : "/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineEditor.o",
+    "llvm-bc" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineEditor.bc",
+    "object" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineEditor.o",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineEditor.swiftdeps",
+    "swiftmodule" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineEditor~partial.swiftmodule"
+  },
+  "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/MacroTimelineModels.swift" : {
+    "const-values" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineModels.swiftconstvalues",
+    "dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineModels.d",
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineModels.dia",
+    "index-unit-output-path" : "/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineModels.o",
+    "llvm-bc" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineModels.bc",
+    "object" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineModels.o",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineModels.swiftdeps",
+    "swiftmodule" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MacroTimelineModels~partial.swiftmodule"
+  },
+  "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/MainView.swift" : {
+    "const-values" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MainView.swiftconstvalues",
+    "dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MainView.d",
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MainView.dia",
+    "index-unit-output-path" : "/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MainView.o",
+    "llvm-bc" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MainView.bc",
+    "object" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MainView.o",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MainView.swiftdeps",
+    "swiftmodule" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MainView~partial.swiftmodule"
+  },
+  "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/MenuBar.swift" : {
+    "const-values" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MenuBar.swiftconstvalues",
+    "dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MenuBar.d",
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MenuBar.dia",
+    "index-unit-output-path" : "/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MenuBar.o",
+    "llvm-bc" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MenuBar.bc",
+    "object" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MenuBar.o",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MenuBar.swiftdeps",
+    "swiftmodule" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/MenuBar~partial.swiftmodule"
+  },
+  "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/Recorder.swift" : {
+    "const-values" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recorder.swiftconstvalues",
+    "dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recorder.d",
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recorder.dia",
+    "index-unit-output-path" : "/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recorder.o",
+    "llvm-bc" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recorder.bc",
+    "object" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recorder.o",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recorder.swiftdeps",
+    "swiftmodule" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Recorder~partial.swiftmodule"
+  },
+  "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/Replayer.swift" : {
+    "const-values" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Replayer.swiftconstvalues",
+    "dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Replayer.d",
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Replayer.dia",
+    "index-unit-output-path" : "/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Replayer.o",
+    "llvm-bc" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Replayer.bc",
+    "object" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Replayer.o",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Replayer.swiftdeps",
+    "swiftmodule" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/Replayer~partial.swiftmodule"
+  },
+  "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/build/Recurra.build/Debug/Recurra.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

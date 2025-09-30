@@ -1,0 +1,48 @@
+{
+  "source": "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/App.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Macro Controls",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 69
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop Recording",
+        "location": {
+          "startingColumn": 47,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start Recording",
+        "location": {
+          "startingColumn": 66,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop Playback",
+        "location": {
+          "startingColumn": 47,
+          "startingLine": 76
+        }
+      },
+      {
+        "comment": "",
+        "key": "Replay Latest Macro",
+        "location": {
+          "startingColumn": 65,
+          "startingLine": 76
+        }
+      }
+    ]
+  },
+  "version": 1
+}

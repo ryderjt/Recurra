@@ -301,12 +301,28 @@ final class Recorder: ObservableObject {
     }
 
     private func registerHotKey() {
-        let modifiers = UInt32(cmdKey | optionKey)
-        hotKeyIdentifier = HotKeyCenter.shared.register(keyCode: UInt32(kVK_ANSI_R), modifiers: modifiers) { [weak self] in
+        let defaults = UserDefaults.standard
+        
+        // Get hotkey configuration from UserDefaults or use defaults
+        let keyCode = UInt32(defaults.integer(forKey: "settings.recordingHotkeyKeyCode"))
+        let modifiers = UInt32(defaults.integer(forKey: "settings.recordingHotkeyModifiers"))
+        
+        // Use defaults if no values are stored
+        let finalKeyCode = keyCode == 0 ? UInt32(kVK_ANSI_R) : keyCode
+        let finalModifiers = modifiers == 0 ? UInt32(cmdKey | optionKey) : modifiers
+        
+        hotKeyIdentifier = HotKeyCenter.shared.register(keyCode: finalKeyCode, modifiers: finalModifiers) { [weak self] in
             DispatchQueue.main.async {
                 self?.toggleRecording()
             }
         }
+    }
+    
+    func updateHotkey() {
+        // Unregister current hotkey
+        HotKeyCenter.shared.unregister(identifier: hotKeyIdentifier)
+        // Register new hotkey
+        registerHotKey()
     }
 
     private func observeMacroLibrary() {
@@ -321,6 +337,14 @@ final class Recorder: ObservableObject {
                 if !self.isRecording && isUsingDefault {
                     self.nextMacroName = Recorder.defaultName(for: suggestedIndex)
                 }
+            }
+            .store(in: &cancellables)
+        
+        // Listen for hotkey settings changes
+        NotificationCenter.default.publisher(for: .hotkeySettingsChanged)
+            .receive(on: RunLoop.main)
+            .sink { [weak self] _ in
+                self?.updateHotkey()
             }
             .store(in: &cancellables)
     }

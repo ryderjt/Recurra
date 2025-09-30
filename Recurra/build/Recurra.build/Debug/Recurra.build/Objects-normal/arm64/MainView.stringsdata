@@ -1,0 +1,432 @@
+{
+  "source": "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/MainView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Library",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 101
+        }
+      },
+      {
+        "comment": "",
+        "key": "Organize, rename, and replay your recorded flows.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 105
+        }
+      },
+      {
+        "comment": "",
+        "key": "New Blank Macro",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 110
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recurra",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 179
+        }
+      },
+      {
+        "comment": "",
+        "key": "Capture and replay keyboard and mouse flows with a minimalist workspace.",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 181
+        }
+      },
+      {
+        "comment": "",
+        "key": "Settings",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 188
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recurra",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 206
+        }
+      },
+      {
+        "comment": "",
+        "key": "Name your next macro and control recording or playback from here.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 209
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next macro name",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 215
+        }
+      },
+      {
+        "comment": "",
+        "key": "Macro name",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 219
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 231
+        }
+      },
+      {
+        "comment": "",
+        "key": "Record",
+        "location": {
+          "startingColumn": 63,
+          "startingLine": 231
+        }
+      },
+      {
+        "comment": "",
+        "key": "Replay Selected",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 239
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop Playback",
+        "location": {
+          "startingColumn": 54,
+          "startingLine": 247
+        }
+      },
+      {
+        "comment": "",
+        "key": "Replay Latest",
+        "location": {
+          "startingColumn": 72,
+          "startingLine": 247
+        }
+      },
+      {
+        "comment": "",
+        "key": "No macro selected",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 266
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pick a macro from the library to see its details, timeline, and quick actions.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 268
+        }
+      },
+      {
+        "comment": "",
+        "key": "Record a macro to see it listed here.",
+        "location": {
+          "startingColumn": 58,
+          "startingLine": 390
+        }
+      },
+      {
+        "comment": "",
+        "key": "No recordings yet",
+        "location": {
+          "startingColumn": 40,
+          "startingLine": 388
+        }
+      },
+      {
+        "comment": "",
+        "key": "No recordings yet",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 396
+        }
+      },
+      {
+        "comment": "",
+        "key": "Record a macro to see it listed here.",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 398
+        }
+      },
+      {
+        "comment": "",
+        "key": "Replay",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 468
+        }
+      },
+      {
+        "comment": "",
+        "key": "Rename",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 469
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 470
+        }
+      },
+      {
+        "comment": "",
+        "key": "Timeline Update Failed",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 550
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 557
+        }
+      },
+      {
+        "comment": "",
+        "key": "Macro name",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 572
+        }
+      },
+      {
+        "comment": "",
+        "key": "Macro name",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 575
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 579
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 596
+        }
+      },
+      {
+        "comment": "",
+        "key": "Replay Macro",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 608
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 611
+        }
+      },
+      {
+        "comment": "",
+        "key": "Keyframes: %lld • Duration: %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 630
+        }
+      },
+      {
+        "comment": "",
+        "key": "Unsaved timeline changes",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 620
+        }
+      },
+      {
+        "comment": "",
+        "key": "Discard Changes",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 624
+        }
+      },
+      {
+        "comment": "",
+        "key": "Save Timeline",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 626
+        }
+      },
+      {
+        "comment": "",
+        "key": "Accessibility permission is required to record and replay events.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 735
+        }
+      },
+      {
+        "comment": "",
+        "key": "Grant Permission",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 737
+        }
+      },
+      {
+        "comment": "",
+        "key": "Grant Accessibility Access",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 763
+        }
+      },
+      {
+        "comment": "",
+        "key": "Recurra needs Accessibility permission to capture and replay keyboard and mouse events. Grant access to continue using recording and playback features.",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 766
+        }
+      },
+      {
+        "comment": "",
+        "key": "Grant Permission",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 773
+        }
+      },
+      {
+        "comment": "",
+        "key": "Not Now",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 778
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reset",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 834
+        }
+      },
+      {
+        "comment": "",
+        "key": "Settings",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 918
+        }
+      },
+      {
+        "comment": "",
+        "key": "Timeline Defaults",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 923
+        }
+      },
+      {
+        "comment": "",
+        "key": "Set the starting length used when editing a macro without keyframes.",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 925
+        }
+      },
+      {
+        "comment": "",
+        "key": "Seconds",
+        "location": {
+          "startingColumn": 39,
+          "startingLine": 929
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ s",
+        "location": {
+          "startingColumn": 38,
+          "startingLine": 933
+        }
+      },
+      {
+        "comment": "",
+        "key": "Keyframe Editing",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 939
+        }
+      },
+      {
+        "comment": "",
+        "key": "Snap keyframes to interval",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 941
+        }
+      },
+      {
+        "comment": "",
+        "key": "Snap interval: %@ s",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 943
+        }
+      },
+      {
+        "comment": "",
+        "key": "Keyboard Shortcuts",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 952
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 992
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,184 @@
+{
+  "source": "/Users/ryderthomas/Desktop/Repositories/Recurra/Recurra/Recurra/MacroTimelineEditor.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Select a keyframe to edit its details.",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "Timeline",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 14
+        }
+      },
+      {
+        "comment": "",
+        "key": "No keyframes yet",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 18
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Key Keyframe",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 41
+        }
+      },
+      {
+        "comment": "",
+        "key": "Add Mouse Keyframe",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 46
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 31,
+          "startingLine": 54
+        }
+      },
+      {
+        "comment": "",
+        "key": "Seconds",
+        "location": {
+          "startingColumn": 23,
+          "startingLine": 146
+        }
+      },
+      {
+        "comment": "",
+        "key": "Timeline Length",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 140
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@ s",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 142
+        }
+      },
+      {
+        "comment": "",
+        "key": "Time: %@ s",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 347
+        }
+      },
+      {
+        "comment": "",
+        "key": "Time (s)",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 379
+        }
+      },
+      {
+        "comment": "",
+        "key": "Time",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 382
+        }
+      },
+      {
+        "comment": "",
+        "key": "Nudge",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 388
+        }
+      },
+      {
+        "comment": "",
+        "key": "Phase",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 408
+        }
+      },
+      {
+        "comment": "",
+        "key": "Key Code",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 423
+        }
+      },
+      {
+        "comment": "",
+        "key": "Key code",
+        "location": {
+          "startingColumn": 27,
+          "startingLine": 426
+        }
+      },
+      {
+        "comment": "",
+        "key": "Phase",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 448
+        }
+      },
+      {
+        "comment": "",
+        "key": "Button",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 464
+        }
+      },
+      {
+        "comment": "",
+        "key": "Button",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 467
+        }
+      },
+      {
+        "comment": "",
+        "key": "Event type: %@",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 524
+        }
+      },
+      {
+        "comment": "",
+        "key": "This event type cannot yet be edited. It will be preserved when you save the macro.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 526
+        }
+      },
+      {
+        "comment": "",
+        "key": "Modifiers",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 541
+        }
+      }
+    ]
+  },
+  "version": 1
+}
