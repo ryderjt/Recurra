@@ -14,7 +14,14 @@ on:
 jobs:
   build-and-release:
     runs-on: macos-latest
-    environment: release
+    # Define environment variables from repository/organization secrets.
+    # This reduces inline secret references in steps and quiets IDE warnings.
+    env:
+      CERTIFICATE_P12: ${{ secrets.CERTIFICATE_P12 }}
+      CERTIFICATE_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
     
     steps:
     - name: Checkout code
@@ -38,15 +45,12 @@ jobs:
     - name: Import Code Signing Certificate
       uses: apple-actions/import-codesign-certs@v2
       with:
-        p12-file-base64: ${{ secrets.CERTIFICATE_P12 }}
-        p12-password: ${{ secrets.CERTIFICATE_PASSWORD }}
+        p12-file-base64: ${{ env.CERTIFICATE_P12 }}
+        p12-password: ${{ env.CERTIFICATE_PASSWORD }}
         
-    - name: Import Notarization Profile
-      uses: apple-actions/import-notarization-profile@v1
-      with:
-        apple-id: ${{ secrets.APPLE_ID }}
-        app-specific-password: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-        team-id: ${{ secrets.APPLE_TEAM_ID }}
+    # Notarization credentials are passed directly to notarytool below.
+    # If you'd like to use a keychain profile instead, switch to
+    # apple-actions/import-notarization-credentials and update the notarytool command.
         
     - name: Build and Archive
       run: |
@@ -85,9 +89,9 @@ jobs:
       run: |
         cd Recurra
         xcrun notarytool submit Recurra.dmg \
-          --apple-id ${{ secrets.APPLE_ID }} \
-          --password ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }} \
-          --team-id ${{ secrets.APPLE_TEAM_ID }} \
+          --apple-id "$APPLE_ID" \
+          --password "$APPLE_APP_SPECIFIC_PASSWORD" \
+          --team-id "$APPLE_TEAM_ID" \
           --wait
           
     - name: Staple Notarization
