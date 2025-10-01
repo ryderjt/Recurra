@@ -336,7 +336,8 @@ struct MacroTimelineDraft: Equatable {
                              name: base.name,
                              createdAt: base.createdAt,
                              events: events,
-                             duration: computedDuration)
+                             duration: computedDuration,
+                             loopCount: base.loopCount)
     }
 
     private func clampedTime(_ proposed: TimeInterval) -> TimeInterval {

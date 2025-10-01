@@ -243,7 +243,8 @@ final class Recorder: ObservableObject {
                                                                          name: name,
                                                                          createdAt: Date(),
                                                                          events: events,
-                                                                         duration: duration)
+                                                                         duration: duration,
+                                                                         loopCount: 1)
 
         DispatchQueue.main.async {
             if let macro {

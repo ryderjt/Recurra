@@ -40,17 +40,26 @@ final class Replayer: ObservableObject {
 
         playbackQueue.async { [weak self] in
             guard let self else { return }
-            for event in macro.events {
-                if self.shouldCancelPlayback { break }
+            
+            let loopCount = macro.loopCount
+            let isInfinite = loopCount == 0
+            var currentLoop = 0
+            
+            while (isInfinite || currentLoop < loopCount) && !self.shouldCancelPlayback {
+                for event in macro.events {
+                    if self.shouldCancelPlayback { break }
 
-                // Clamp delay to reasonable bounds to prevent excessive delays
-                let clampedDelay = max(0, min(event.delay, 10.0))
-                if clampedDelay > 0 {
-                    Thread.sleep(forTimeInterval: clampedDelay)
+                    // Clamp delay to reasonable bounds to prevent excessive delays
+                    let clampedDelay = max(0, min(event.delay, 10.0))
+                    if clampedDelay > 0 {
+                        Thread.sleep(forTimeInterval: clampedDelay)
+                    }
+
+                    // Post the event and check for errors
+                    event.event.post(tap: .cghidEventTap)
                 }
-
-                // Post the event and check for errors
-                event.event.post(tap: .cghidEventTap)
+                
+                currentLoop += 1
             }
 
             DispatchQueue.main.async {

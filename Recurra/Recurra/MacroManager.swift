@@ -13,6 +13,7 @@ struct RecordedMacro: Identifiable {
     let createdAt: Date
     let events: [TimedEvent]
     let duration: TimeInterval
+    var loopCount: Int
 }
 
 // Equatable conformance so arrays of RecordedMacro are Equatable for onChange(of:)
@@ -22,7 +23,8 @@ extension RecordedMacro: Equatable {
         lhs.name == rhs.name &&
         lhs.createdAt == rhs.createdAt &&
         lhs.duration == rhs.duration &&
-        lhs.events.count == rhs.events.count
+        lhs.events.count == rhs.events.count &&
+        lhs.loopCount == rhs.loopCount
     }
 }
 
@@ -114,6 +116,20 @@ final class MacroManager: ObservableObject {
         executeOnMain(update)
     }
 
+    func updateLoopCount(_ macro: RecordedMacro, to loopCount: Int) {
+        guard loopCount >= 0 else { return }
+        guard loopCount != macro.loopCount else { return }
+
+        let update = {
+            if let index = self.macros.firstIndex(where: { $0.id == macro.id }) {
+                self.macros[index].loopCount = loopCount
+                self.persistCurrentState()
+            }
+        }
+
+        executeOnMain(update)
+    }
+
     @discardableResult
     func createCustomMacro(named name: String? = nil) -> RecordedMacro {
         let resolvedName: String
@@ -127,7 +143,8 @@ final class MacroManager: ObservableObject {
                                   name: resolvedName,
                                   createdAt: Date(),
                                   events: [],
-                                  duration: 0)
+                                  duration: 0,
+                                  loopCount: 1)
         add(macro)
         return macro
     }
@@ -224,6 +241,7 @@ private struct StoredMacro: Codable {
     let createdAt: Date
     let duration: TimeInterval
     let events: [StoredEvent]
+    let loopCount: Int
 
     init?(macro: RecordedMacro) {
         let events = macro.events.compactMap { event -> StoredEvent? in
@@ -236,6 +254,7 @@ private struct StoredMacro: Codable {
         self.createdAt = macro.createdAt
         self.duration = macro.duration
         self.events = events
+        self.loopCount = macro.loopCount
     }
 
     func makeRecordedMacro() -> RecordedMacro? {
@@ -244,7 +263,7 @@ private struct StoredMacro: Codable {
             return RecordedMacro.TimedEvent(delay: stored.delay, event: event)
         }
         guard events.count == self.events.count else { return nil }
-        return RecordedMacro(id: id, name: name, createdAt: createdAt, events: events, duration: duration)
+        return RecordedMacro(id: id, name: name, createdAt: createdAt, events: events, duration: duration, loopCount: loopCount)
     }
 }
 

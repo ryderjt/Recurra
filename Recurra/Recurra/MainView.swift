@@ -160,7 +160,8 @@ struct MainView: View {
                                     isReplaying: replayer.isReplaying,
                                     saveTimelineAction: { updated in
                                         macroManager.update(updated)
-                                    })
+                                    },
+                                    macroManager: macroManager)
                 } else {
                     emptySelectionCard
                 }
@@ -802,6 +803,7 @@ struct MacroDetailCard: View {
     let deleteAction: () -> Void
     let isReplaying: Bool
     let saveTimelineAction: (RecordedMacro) -> Void
+    let macroManager: MacroManager
 
     @State private var timelineDraft: MacroTimelineDraft
     @State private var selectedKeyframeID: UUID?
@@ -817,7 +819,8 @@ struct MacroDetailCard: View {
          playAction: @escaping () -> Void,
          deleteAction: @escaping () -> Void,
          isReplaying: Bool,
-         saveTimelineAction: @escaping (RecordedMacro) -> Void) {
+         saveTimelineAction: @escaping (RecordedMacro) -> Void,
+         macroManager: MacroManager) {
         self.macro = macro
         self._renameText = renameText
         self.isRenaming = isRenaming
@@ -826,6 +829,7 @@ struct MacroDetailCard: View {
         self.deleteAction = deleteAction
         self.isReplaying = isReplaying
         self.saveTimelineAction = saveTimelineAction
+        self.macroManager = macroManager
         let baselineDuration = MacroDetailCard.resolveDefaultTimelineDuration()
         _timelineDraft = State(initialValue: MacroTimelineDraft(macro: macro,
                                                                minimumDuration: baselineDuration))
@@ -838,6 +842,8 @@ struct MacroDetailCard: View {
             summaryRow
 
             actionButtons
+
+            loopSettings
 
             Divider()
 
@@ -932,6 +938,29 @@ struct MacroDetailCard: View {
                 .disabled(isReplaying)
             Button("Delete", role: .destructive, action: deleteAction)
                 .buttonStyle(SubtleButtonStyle(isDestructive: true))
+        }
+    }
+
+    private var loopSettings: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Loop Settings")
+                .font(.headline)
+            HStack(spacing: 10) {
+                TextField("Loop count", value: Binding(
+                    get: { macro.loopCount },
+                    set: { newValue in
+                        macroManager.updateLoopCount(macro, to: newValue)
+                    }
+                ), format: .number)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 100)
+                Text("times")
+                    .foregroundStyle(.secondary)
+                Spacer()
+            }
+            Text("Set to 0 for infinite loops")
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 
