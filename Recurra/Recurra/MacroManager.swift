@@ -42,7 +42,7 @@ final class MacroManager: ObservableObject {
     }
 
     var mostRecentMacro: RecordedMacro? {
-        macros.first
+        macros.last
     }
 
     func add(_ macro: RecordedMacro) {
@@ -58,7 +58,7 @@ final class MacroManager: ObservableObject {
         }
 
         let insert = {
-            self.macros.insert(macro, at: 0)
+            self.macros.append(macro)
             self.persistCurrentState()
         }
 

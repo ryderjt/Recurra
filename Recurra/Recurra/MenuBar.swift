@@ -113,8 +113,8 @@ final class MenuBarController: NSObject, ObservableObject {
         case .recording:
             let recordingIcon = NSImage(systemSymbolName: "record.circle.fill", accessibilityDescription: "Recording")
             recordingIcon?.isTemplate = true
-            button.image = recordingIcon
-            button.contentTintColor = NSColor.systemRed
+            button.image = recordingIcon?.tinted(with: NSColor.white)
+            button.contentTintColor = nil
         case .replaying:
             let replayIcon = NSImage(systemSymbolName: "play.circle.fill", accessibilityDescription: "Replaying")
             replayIcon?.isTemplate = true

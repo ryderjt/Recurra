@@ -77,7 +77,7 @@ struct MainView: View {
                 return
             }
             // Always auto-select the most recent macro when a new one is added
-            selectedMacroID = macros.first?.id
+            selectedMacroID = macros.last?.id
         }
         .onChange(of: selectedMacroID) { _ in
             renameText = selectedMacro?.name ?? ""
