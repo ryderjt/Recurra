@@ -16,6 +16,12 @@ private struct SettingsView: View {
     @AppStorage(AppSettingsKey.playbackHotkeyKeyCode) private var playbackKeyCode = Int(kVK_ANSI_P)
     @AppStorage(AppSettingsKey.playbackHotkeyModifiers) private var playbackModifiers = Int(cmdKey | optionKey)
     @AppStorage(AppSettingsKey.playbackHotkeyKeyEquivalent) private var playbackKeyEquivalent = "p"
+    @AppStorage(AppSettingsKey.playSelectedHotkeyKeyCode) private var playSelectedKeyCode = Int(kVK_ANSI_S)
+    @AppStorage(AppSettingsKey.playSelectedHotkeyModifiers) private var playSelectedModifiers = Int(cmdKey | optionKey)
+    @AppStorage(AppSettingsKey.playSelectedHotkeyKeyEquivalent) private var playSelectedKeyEquivalent = "s"
+    @AppStorage(AppSettingsKey.stopMacroHotkeyKeyCode) private var stopMacroKeyCode = Int(kVK_ANSI_Escape)
+    @AppStorage(AppSettingsKey.stopMacroHotkeyModifiers) private var stopMacroModifiers = Int(cmdKey | optionKey)
+    @AppStorage(AppSettingsKey.stopMacroHotkeyKeyEquivalent) private var stopMacroKeyEquivalent = "escape"
 
     var body: some View {
         let palette = Palette(colorScheme: colorScheme)
@@ -92,7 +98,7 @@ private struct SettingsView: View {
 
                         HotkeyPicker(
                             title: "Playback",
-                            description: "Replay the most recent macro",
+                            description: "Play the most recent macro",
                             keyCode: $playbackKeyCode,
                             modifiers: $playbackModifiers,
                             keyEquivalent: $playbackKeyEquivalent
@@ -104,6 +110,40 @@ private struct SettingsView: View {
                             NotificationCenter.default.post(name: .hotkeySettingsChanged, object: nil)
                         }
                         .onChange(of: playbackKeyEquivalent) { _ in
+                            NotificationCenter.default.post(name: .hotkeySettingsChanged, object: nil)
+                        }
+
+                        HotkeyPicker(
+                            title: "Play Selected",
+                            description: "Play the currently selected macro",
+                            keyCode: $playSelectedKeyCode,
+                            modifiers: $playSelectedModifiers,
+                            keyEquivalent: $playSelectedKeyEquivalent
+                        )
+                        .onChange(of: playSelectedKeyCode) { _ in
+                            NotificationCenter.default.post(name: .hotkeySettingsChanged, object: nil)
+                        }
+                        .onChange(of: playSelectedModifiers) { _ in
+                            NotificationCenter.default.post(name: .hotkeySettingsChanged, object: nil)
+                        }
+                        .onChange(of: playSelectedKeyEquivalent) { _ in
+                            NotificationCenter.default.post(name: .hotkeySettingsChanged, object: nil)
+                        }
+
+                        HotkeyPicker(
+                            title: "Stop Macro",
+                            description: "Stop any currently playing macro",
+                            keyCode: $stopMacroKeyCode,
+                            modifiers: $stopMacroModifiers,
+                            keyEquivalent: $stopMacroKeyEquivalent
+                        )
+                        .onChange(of: stopMacroKeyCode) { _ in
+                            NotificationCenter.default.post(name: .hotkeySettingsChanged, object: nil)
+                        }
+                        .onChange(of: stopMacroModifiers) { _ in
+                            NotificationCenter.default.post(name: .hotkeySettingsChanged, object: nil)
+                        }
+                        .onChange(of: stopMacroKeyEquivalent) { _ in
                             NotificationCenter.default.post(name: .hotkeySettingsChanged, object: nil)
                         }
                     }
@@ -188,9 +228,24 @@ private struct HotkeyPicker: View {
 
                 if !isRecording {
                     Button("Reset") {
-                        keyCode = Int(kVK_ANSI_R)
-                        modifiers = Int(cmdKey | optionKey)
-                        keyEquivalent = "r"
+                        // Reset to appropriate defaults based on context
+                        if title == "Recording" {
+                            keyCode = Int(kVK_ANSI_R)
+                            modifiers = Int(cmdKey | optionKey)
+                            keyEquivalent = "r"
+                        } else if title == "Playback" {
+                            keyCode = Int(kVK_ANSI_P)
+                            modifiers = Int(cmdKey | optionKey)
+                            keyEquivalent = "p"
+                        } else if title == "Play Selected" {
+                            keyCode = Int(kVK_ANSI_S)
+                            modifiers = Int(cmdKey | optionKey)
+                            keyEquivalent = "s"
+                        } else if title == "Stop Macro" {
+                            keyCode = Int(kVK_ANSI_Escape)
+                            modifiers = Int(cmdKey | optionKey)
+                            keyEquivalent = "escape"
+                        }
                     }
                     .buttonStyle(.bordered)
                 }

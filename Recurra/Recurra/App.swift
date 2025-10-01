@@ -57,6 +57,40 @@ struct RecurraApp: App {
         return KeyboardShortcut(KeyEquivalent(character), modifiers: eventModifiers)
     }
 
+    private var playSelectedKeyboardShortcut: KeyboardShortcut {
+        let defaults = UserDefaults.standard
+        let keyEquivalent = defaults.string(forKey: "settings.playSelectedHotkeyKeyEquivalent") ?? "s"
+        let modifiers = UInt32(defaults.integer(forKey: "settings.playSelectedHotkeyModifiers"))
+
+        var eventModifiers: SwiftUI.EventModifiers = []
+        if modifiers & UInt32(controlKey) != 0 { eventModifiers.insert(.control) }
+        if modifiers & UInt32(optionKey) != 0 { eventModifiers.insert(.option) }
+        if modifiers & UInt32(shiftKey) != 0 { eventModifiers.insert(.shift) }
+        if modifiers & UInt32(cmdKey) != 0 { eventModifiers.insert(.command) }
+
+        guard let character = keyEquivalent.first else {
+            return KeyboardShortcut("s", modifiers: [.command, .option])
+        }
+        return KeyboardShortcut(KeyEquivalent(character), modifiers: eventModifiers)
+    }
+
+    private var stopMacroKeyboardShortcut: KeyboardShortcut {
+        let defaults = UserDefaults.standard
+        let keyEquivalent = defaults.string(forKey: "settings.stopMacroHotkeyKeyEquivalent") ?? "escape"
+        let modifiers = UInt32(defaults.integer(forKey: "settings.stopMacroHotkeyModifiers"))
+
+        var eventModifiers: SwiftUI.EventModifiers = []
+        if modifiers & UInt32(controlKey) != 0 { eventModifiers.insert(.control) }
+        if modifiers & UInt32(optionKey) != 0 { eventModifiers.insert(.option) }
+        if modifiers & UInt32(shiftKey) != 0 { eventModifiers.insert(.shift) }
+        if modifiers & UInt32(cmdKey) != 0 { eventModifiers.insert(.command) }
+
+        guard let character = keyEquivalent.first else {
+            return KeyboardShortcut(.escape, modifiers: [.command, .option])
+        }
+        return KeyboardShortcut(KeyEquivalent(character), modifiers: eventModifiers)
+    }
+
     var body: some Scene {
         WindowGroup {
             MainView()
@@ -75,7 +109,7 @@ struct RecurraApp: App {
                 .keyboardShortcut(recordingKeyboardShortcut)
                 .disabled(recorder.isReplaying)
 
-                Button(replayer.isReplaying ? "Stop Playback" : "Replay Latest Macro") {
+                Button(replayer.isReplaying ? "Stop Playback" : "Play Latest Macro") {
                     if replayer.isReplaying {
                         replayer.stop()
                     } else {
@@ -84,6 +118,7 @@ struct RecurraApp: App {
                 }
                 .keyboardShortcut(playbackKeyboardShortcut)
                 .disabled(!replayer.isReplaying && macroManager.mostRecentMacro == nil)
+
             }
         }
     }

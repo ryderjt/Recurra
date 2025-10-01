@@ -16,6 +16,12 @@ enum AppSettingsKey {
     static let playbackHotkeyKeyCode = "settings.playbackHotkeyKeyCode"
     static let playbackHotkeyModifiers = "settings.playbackHotkeyModifiers"
     static let playbackHotkeyKeyEquivalent = "settings.playbackHotkeyKeyEquivalent"
+    static let playSelectedHotkeyKeyCode = "settings.playSelectedHotkeyKeyCode"
+    static let playSelectedHotkeyModifiers = "settings.playSelectedHotkeyModifiers"
+    static let playSelectedHotkeyKeyEquivalent = "settings.playSelectedHotkeyKeyEquivalent"
+    static let stopMacroHotkeyKeyCode = "settings.stopMacroHotkeyKeyCode"
+    static let stopMacroHotkeyModifiers = "settings.stopMacroHotkeyModifiers"
+    static let stopMacroHotkeyKeyEquivalent = "settings.stopMacroHotkeyKeyEquivalent"
 }
 
 struct MainView: View {
@@ -30,7 +36,7 @@ struct MainView: View {
     @State private var isShowingPermissionSheet = false
     @State private var isShowingSettings = false
     @State private var permissionMonitor: Timer?
-    @State private var sidebarWidth: CGFloat = 280
+    @State private var sidebarWidth: CGFloat = 320
 
     private var palette: Palette { Palette(colorScheme: colorScheme) }
 
@@ -70,10 +76,10 @@ struct MainView: View {
                 renameText = ""
                 return
             }
-            if let selectedMacroID, macros.contains(where: { $0.id == selectedMacroID }) {
-                return
+            // Only auto-select if no macro is currently selected
+            if selectedMacroID == nil {
+                selectedMacroID = macros.first?.id
             }
-            selectedMacroID = macros.first?.id
         }
         .onChange(of: selectedMacroID) { _ in
             renameText = selectedMacro?.name ?? ""
@@ -97,24 +103,41 @@ struct MainView: View {
         .sheet(isPresented: $isShowingSettings) {
             SettingsView()
         }
+        .background(
+            // Hidden button for stop macro keyboard shortcut
+            Button("Stop Macro", action: stopMacro)
+                .keyboardShortcut(stopMacroKeyboardShortcut)
+                .opacity(0)
+                .frame(width: 0, height: 0)
+        )
     }
 
     private var sidebar: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("Library")
-                .font(.title2.weight(.semibold))
-                .padding(.top, 30)
+            VStack(spacing: 8) {
+                Text("Library")
+                    .font(.title2.weight(.semibold))
+                    .multilineTextAlignment(.center)
 
-            Text("Organize, rename, and replay your recorded flows.")
-                .font(.callout)
-                .foregroundStyle(.secondary)
+                Text("Organize, rename, and play your recorded flows.")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .padding(.top, 34)
 
             Button(action: createCustomMacro) {
-                Label("New Blank Macro", systemImage: "plus")
+                HStack(spacing: 8) {
+                    Image(systemName: "plus.circle.fill")
+                    Text("New Blank Macro")
+                }
             }
             .buttonStyle(SubtleButtonStyle())
+            .help("Create an empty macro that you can manually build with the timeline editor")
+            .frame(maxWidth: .infinity, alignment: .center)
 
-            List(selection: $selectedMacroID) {
+            List {
                 if macroManager.macros.isEmpty {
                     EmptyMacroPlaceholder()
                         .listRowSeparator(.hidden)
@@ -126,8 +149,11 @@ struct MainView: View {
                                  replayAction: { replayer.replay(macro) },
                                  renameAction: { startRenaming(macro) },
                                  deleteAction: { macroManager.remove(macro) })
-                            .tag(macro.id)
                             .listRowSeparator(.hidden)
+                            .listRowBackground(Color.clear)
+                            .onTapGesture {
+                                selectedMacroID = macro.id
+                            }
                     }
                     .onDelete { offsets in
                         macroManager.remove(at: offsets)
@@ -160,6 +186,8 @@ struct MainView: View {
                                     isReplaying: replayer.isReplaying,
                                     saveTimelineAction: { updated in
                                         macroManager.update(updated)
+                                        // Ensure the updated macro remains selected
+                                        selectedMacroID = updated.id
                                     },
                                     macroManager: macroManager)
                 } else {
@@ -216,74 +244,229 @@ struct MainView: View {
     }
 
     private var controlsCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Recurra")
-                .font(.title3.weight(.semibold))
+        VStack(alignment: .leading, spacing: 20) {
+            // Header section with clear title and description
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .center, spacing: 12) {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundStyle(.blue)
+                        .font(.title2)
+                    Text("Create New Macro")
+                        .font(.title3.weight(.semibold))
+                }
+                
+                Text("Record keyboard and mouse actions to create reusable macros.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
-            Text("Name your next macro and control recording or playback from here.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-
-            HStack(alignment: .center, spacing: 16) {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("Next macro name")
+            // Macro creation section with improved layout
+            VStack(alignment: .leading, spacing: 16) {
+                // Step 1: Name your macro
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Name your macro")
                         .font(.footnote.weight(.medium))
                         .foregroundStyle(.secondary)
-
-                    TextField("Macro name", text: $recorder.nextMacroName)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(maxWidth: 260)
-                        .onSubmit {
-                            recorder.nextMacroName = recorder.nextMacroName.trimmingCharacters(in: .whitespaces)
+                    
+                    HStack(spacing: 12) {
+                        TextField("Enter macro name...", text: $recorder.nextMacroName)
+                            .textFieldStyle(.roundedBorder)
+                            .frame(maxWidth: 280)
+                            .onSubmit {
+                                recorder.nextMacroName = recorder.nextMacroName.trimmingCharacters(in: .whitespaces)
+                            }
+                        
+                        if !recorder.nextMacroName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                                .font(.title3)
                         }
-                }
-
-                Spacer(minLength: 12)
-
-                VStack(alignment: .leading, spacing: 10) {
-                    Button(action: recorder.toggleRecording) {
-                        Label(recorder.isRecording ? "Stop" : "Record",
-                              systemImage: recorder.isRecording ? "stop.circle.fill" : "record.circle")
-                            .font(.headline)
                     }
-                    .buttonStyle(GradientButtonStyle(isDestructive: recorder.isRecording))
-                    .disabled(recorder.isReplaying)
-                    .keyboardShortcut("r", modifiers: [.command, .option])
-
+                }
+                
+                // Step 2: Record your macro
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(recorder.isRecording ? "Recording in progress..." : "Record your actions")
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(.secondary)
+                    
+                    HStack(spacing: 12) {
+                        Button(action: recorder.toggleRecording) {
+                            HStack(spacing: 8) {
+                                Image(systemName: recorder.isRecording ? "stop.circle.fill" : "record.circle")
+                                    .font(.title3)
+                                Text(recorder.isRecording ? "Stop Recording" : "Start Recording")
+                                    .font(.headline)
+                            }
+                        }
+                        .buttonStyle(GradientButtonStyle(isDestructive: recorder.isRecording))
+                        .disabled(recorder.isReplaying)
+                        .keyboardShortcut("r", modifiers: [.command, .option])
+                        .help(recorder.isRecording ? "Stop recording your macro" : "Start recording keyboard and mouse actions")
+                        
+                        if recorder.isRecording {
+                            HStack(spacing: 6) {
+                                Circle()
+                                    .fill(.red)
+                                    .frame(width: 8, height: 8)
+                                    .scaleEffect(recorder.isRecording ? 1.2 : 1.0)
+                                    .animation(.easeInOut(duration: 0.8).repeatForever(autoreverses: true), value: recorder.isRecording)
+                                Text("Recording...")
+                                    .font(.caption)
+                                    .foregroundStyle(.red)
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Quick actions section
+            VStack(alignment: .leading, spacing: 12) {
+                Divider()
+                    .padding(.vertical, 4)
+                
+                Text("Quick Actions")
+                    .font(.footnote.weight(.medium))
+                    .foregroundStyle(.secondary)
+                
+                HStack(spacing: 12) {
                     Button(action: replaySelected) {
-                        Label("Replay Selected", systemImage: "play.circle")
+                        HStack(spacing: 6) {
+                            Image(systemName: "play.circle")
+                            Text("Play Selected")
+                        }
                     }
                     .buttonStyle(SubtleButtonStyle())
                     .disabled(selectedMacro == nil || recorder.isRecording || recorder.isReplaying)
-                }
-
-                VStack(alignment: .leading, spacing: 10) {
+                    .keyboardShortcut(playSelectedKeyboardShortcut)
+                    .help("Play the currently selected macro from the library")
+                    
                     Button(action: replayer.togglePlayback) {
-                        Label(replayer.isReplaying ? "Stop Playback" : "Replay Latest",
-                              systemImage: replayer.isReplaying ? "stop.circle" : "gobackward")
+                        HStack(spacing: 6) {
+                            Image(systemName: replayer.isReplaying ? "stop.circle" : "gobackward")
+                            Text(replayer.isReplaying ? "Stop Latest" : "Play Latest")
+                        }
                     }
                     .buttonStyle(SubtleButtonStyle(isDestructive: replayer.isReplaying))
                     .disabled((macroManager.mostRecentMacro == nil && !replayer.isReplaying) || recorder.isRecording)
                     .keyboardShortcut("p", modifiers: [.command, .option])
-
-                    Label(statusMessage, systemImage: statusIcon)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                    .help(replayer.isReplaying ? "Stop the currently playing macro" : "Play the most recently created macro")
+                    
+                    Spacer()
+                    
+                    // Status indicator
+                    HStack(spacing: 6) {
+                        Image(systemName: statusIcon)
+                            .foregroundStyle(statusColor)
+                        Text(statusMessage)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 }
             }
         }
-        .padding(22)
+        .padding(24)
         .cardBackground()
+    }
+    
+    private var statusColor: Color {
+        if recorder.isRecording {
+            return .red
+        }
+        if replayer.isReplaying {
+            return .blue
+        }
+        if selectedMacro != nil {
+            return .green
+        }
+        return .secondary
     }
 
     private var emptySelectionCard: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("No macro selected")
-                .font(.headline)
-            Text("Pick a macro from the library to see its details, timeline, and quick actions.")
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 20) {
+            if macroManager.macros.isEmpty {
+                // First-time user guidance
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "sparkles")
+                            .foregroundStyle(.blue)
+                            .font(.title2)
+                        Text("Welcome to Recurra!")
+                            .font(.title2.weight(.semibold))
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Get started by creating your first macro:")
+                            .font(.headline)
+                            .foregroundStyle(.primary)
+                        
+                        VStack(alignment: .leading, spacing: 8) {
+                            HStack(alignment: .top, spacing: 8) {
+                                Text("1.")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.blue)
+                                    .frame(width: 16)
+                                Text("Enter a name for your macro above")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            HStack(alignment: .top, spacing: 8) {
+                                Text("2.")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.blue)
+                                    .frame(width: 16)
+                                Text("Click 'Start Recording' and perform your actions")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            
+                            HStack(alignment: .top, spacing: 8) {
+                                Text("3.")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(.blue)
+                                    .frame(width: 16)
+                                Text("Click 'Stop Recording' when finished")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        .padding(.leading, 8)
+                        
+                        Text("Your macro will appear in the library and can be replayed anytime!")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .italic()
+                    }
+                }
+            } else {
+                // User has macros but none selected
+                VStack(alignment: .leading, spacing: 12) {
+                    HStack(alignment: .center, spacing: 12) {
+                        Image(systemName: "sidebar.left")
+                            .foregroundStyle(.blue)
+                            .font(.title2)
+                        Text("No macro selected")
+                            .font(.title2.weight(.semibold))
+                    }
+                    
+                    Text("Choose a macro from the library to view its details, timeline, and playback options.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    
+                    if let mostRecentMacro = macroManager.mostRecentMacro {
+                        Button(action: { selectedMacroID = mostRecentMacro.id }) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "clock.arrow.circlepath")
+                                Text("Select most recent: \(mostRecentMacro.name)")
+                            }
+                        }
+                        .buttonStyle(SubtleButtonStyle())
+                    }
+                }
+            }
         }
-        .padding(24)
+        .padding(28)
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardBackground(cornerRadius: 24)
     }
@@ -293,12 +476,12 @@ struct MainView: View {
             return "Recording in progress"
         }
         if replayer.isReplaying {
-            return "Replaying latest macro"
+            return "Playing latest macro"
         }
         if let selectedMacro {
             return "Selected: \(selectedMacro.name)"
         }
-        return "Select a macro to replay"
+        return "Select a macro to play"
     }
 
     private var statusIcon: String {
@@ -318,6 +501,40 @@ struct MainView: View {
         macroManager.macro(with: selectedMacroID) ?? macroManager.mostRecentMacro
     }
 
+    private var playSelectedKeyboardShortcut: KeyboardShortcut {
+        let defaults = UserDefaults.standard
+        let keyEquivalent = defaults.string(forKey: AppSettingsKey.playSelectedHotkeyKeyEquivalent) ?? "s"
+        let modifiers = UInt32(defaults.integer(forKey: AppSettingsKey.playSelectedHotkeyModifiers))
+
+        var eventModifiers: SwiftUI.EventModifiers = []
+        if modifiers & UInt32(controlKey) != 0 { eventModifiers.insert(.control) }
+        if modifiers & UInt32(optionKey) != 0 { eventModifiers.insert(.option) }
+        if modifiers & UInt32(shiftKey) != 0 { eventModifiers.insert(.shift) }
+        if modifiers & UInt32(cmdKey) != 0 { eventModifiers.insert(.command) }
+
+        guard let character = keyEquivalent.first else {
+            return KeyboardShortcut("s", modifiers: [.command, .option])
+        }
+        return KeyboardShortcut(KeyEquivalent(character), modifiers: eventModifiers)
+    }
+
+    private var stopMacroKeyboardShortcut: KeyboardShortcut {
+        let defaults = UserDefaults.standard
+        let keyEquivalent = defaults.string(forKey: AppSettingsKey.stopMacroHotkeyKeyEquivalent) ?? "escape"
+        let modifiers = UInt32(defaults.integer(forKey: AppSettingsKey.stopMacroHotkeyModifiers))
+
+        var eventModifiers: SwiftUI.EventModifiers = []
+        if modifiers & UInt32(controlKey) != 0 { eventModifiers.insert(.control) }
+        if modifiers & UInt32(optionKey) != 0 { eventModifiers.insert(.option) }
+        if modifiers & UInt32(shiftKey) != 0 { eventModifiers.insert(.shift) }
+        if modifiers & UInt32(cmdKey) != 0 { eventModifiers.insert(.command) }
+
+        guard let character = keyEquivalent.first else {
+            return KeyboardShortcut(.escape, modifiers: [.command, .option])
+        }
+        return KeyboardShortcut(KeyEquivalent(character), modifiers: eventModifiers)
+    }
+
     private func createCustomMacro() {
         let macro = macroManager.createCustomMacro()
         selectedMacroID = macro.id
@@ -327,6 +544,12 @@ struct MainView: View {
     private func replaySelected() {
         guard let macro = selectedMacro else { return }
         replayer.replay(macro)
+    }
+
+    private func stopMacro() {
+        if replayer.isReplaying {
+            replayer.stop()
+        }
     }
 
     private func commitRename() {
@@ -455,23 +678,32 @@ private struct EmptyMacroPlaceholder: View {
     var body: some View {
         Group {
             if #available(macOS 14.0, *) {
-                ContentUnavailableView("No recordings yet",
-                                       systemImage: "square.and.pencil",
-                                       description: Text("Record a macro to see it listed here."))
+                ContentUnavailableView(
+                    "No macros yet",
+                    systemImage: "plus.circle",
+                    description: Text("Create your first macro using the controls on the right.")
+                )
+                .symbolEffect(.pulse, isActive: true)
             } else {
                 VStack(spacing: 16) {
-                    RecurraLogo()
-                        .frame(width: 48, height: 48)
-                        .opacity(0.6)
+                    Image(systemName: "plus.circle.fill")
+                        .font(.system(size: 48, weight: .light))
+                        .foregroundStyle(.blue.opacity(0.6))
 
                     VStack(spacing: 8) {
-                        Text("No recordings yet")
+                        Text("No macros yet")
                             .font(.title3.weight(.semibold))
-                        Text("Record a macro to see it listed here.")
+                        Text("Create your first macro using the controls on the right.")
                             .font(.callout)
                             .foregroundStyle(.secondary)
                             .multilineTextAlignment(.center)
                             .frame(maxWidth: 220)
+                        
+                        Text("💡 Tip: Give your macro a descriptive name first!")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                            .italic()
+                            .padding(.top, 4)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .center)
@@ -538,7 +770,7 @@ private struct MacroRow: View {
         )
         .listRowBackground(Color.clear)
         .contextMenu {
-            Button("Replay", action: replayAction)
+            Button("Play", action: replayAction)
             Button("Rename", action: renameAction)
             Button("Delete", role: .destructive, action: deleteAction)
         }
@@ -670,10 +902,6 @@ private struct SettingsView: View {
                 VStack(spacing: 16) {
                     RecurraLogo()
                         .frame(width: 64, height: 64)
-
-                    Image(systemName: "gearshape.fill")
-                        .font(.system(size: 32, weight: .medium))
-                        .foregroundStyle(.blue)
                 }
 
                 Text("Settings")
@@ -807,9 +1035,12 @@ struct MacroDetailCard: View {
 
     @State private var timelineDraft: MacroTimelineDraft
     @State private var selectedKeyframeID: UUID?
-    @State private var hasTimelineChanges = false
+    @State private var isAutoSaving = false
     @State private var suppressTimelineChange = false
+    @State private var suppressTimelineReset = false
     @State private var timelineErrorMessage: String?
+    @State private var lastAutoSaveTime: Date?
+    @State private var autoSaveTask: Task<Void, Never>?
     @AppStorage(AppSettingsKey.defaultTimelineDuration) private var defaultTimelineDuration = 3.0
 
     init(macro: RecordedMacro,
@@ -848,12 +1079,14 @@ struct MacroDetailCard: View {
             Divider()
 
             MacroTimelineEditor(draft: $timelineDraft, selection: $selectedKeyframeID)
-                .onChange(of: timelineDraft) { _ in
-                    if suppressTimelineChange {
+                .onChange(of: timelineDraft) { newDraft in
+                    guard !suppressTimelineChange else {
                         suppressTimelineChange = false
-                    } else {
-                        hasTimelineChanges = true
+                        return
                     }
+                    
+                    // Auto-save changes after a brief delay
+                    autoSaveTimeline()
                 }
 
             timelineFooter
@@ -865,14 +1098,12 @@ struct MacroDetailCard: View {
             applyTimeline(from: macro)
         }
         .onChange(of: macro.events.count) { _ in
-            if !hasTimelineChanges {
-                applyTimeline(from: macro)
-            }
+            guard !suppressTimelineReset else { return }
+            applyTimeline(from: macro)
         }
         .onChange(of: macro.duration) { _ in
-            if !hasTimelineChanges {
-                applyTimeline(from: macro)
-            }
+            guard !suppressTimelineReset else { return }
+            applyTimeline(from: macro)
         }
         .alert("Timeline Update Failed", isPresented: Binding(get: {
             timelineErrorMessage != nil
@@ -888,9 +1119,13 @@ struct MacroDetailCard: View {
             Text(timelineErrorMessage ?? "")
         }
         .onChange(of: defaultTimelineDuration) { newValue in
-            guard timelineDraft.keyframes.isEmpty, !hasTimelineChanges else { return }
+            guard timelineDraft.keyframes.isEmpty else { return }
             let target = MacroDetailCard.resolveDefaultTimelineDuration(from: newValue)
             timelineDraft.duration = max(timelineDraft.duration, target)
+        }
+        .onDisappear {
+            // Cancel any pending auto-save when view disappears
+            autoSaveTask?.cancel()
         }
     }
 
@@ -933,7 +1168,7 @@ struct MacroDetailCard: View {
 
     private var actionButtons: some View {
         HStack(spacing: 12) {
-            Button("Replay Macro", action: playAction)
+            Button("Play Macro", action: playAction)
                 .buttonStyle(GradientButtonStyle(isDestructive: false))
                 .disabled(isReplaying)
             Button("Delete", role: .destructive, action: deleteAction)
@@ -966,37 +1201,64 @@ struct MacroDetailCard: View {
 
     private var timelineFooter: some View {
         VStack(alignment: .leading, spacing: 12) {
-            if hasTimelineChanges {
-                HStack(spacing: 12) {
-                    Label("Unsaved timeline changes", systemImage: "exclamationmark.triangle.fill")
+            HStack(spacing: 12) {
+                if isAutoSaving {
+                    Label("Saving...", systemImage: "arrow.clockwise")
                         .font(.footnote)
-                        .foregroundStyle(.orange)
-                    Spacer()
-                    Button("Discard Changes", role: .destructive, action: resetTimeline)
-                        .buttonStyle(.bordered)
-                    Button("Save Timeline", action: saveTimeline)
-                        .buttonStyle(.borderedProminent)
+                        .foregroundStyle(.blue)
+                } else if let lastSave = lastAutoSaveTime {
+                    Label("Saved \(lastSave.formatted(date: .omitted, time: .shortened))", systemImage: "checkmark.circle.fill")
+                        .font(.footnote)
+                        .foregroundStyle(.green)
+                } else {
+                    Text("Keyframes: \(timelineDraft.keyframes.count) • " +
+                         "Duration: \(String(format: "%.2fs", timelineDraft.duration))")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
-            } else {
-                Text("Keyframes: \(timelineDraft.keyframes.count) • " +
-                     "Duration: \(String(format: "%.2fs", timelineDraft.duration))")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+                Spacer()
             }
         }
     }
 
-    private func resetTimeline() {
-        applyTimeline(from: macro)
+    private func autoSaveTimeline() {
+        // Cancel any existing auto-save task
+        autoSaveTask?.cancel()
+        
+        // Create a new debounced auto-save task
+        autoSaveTask = Task {
+            // Wait for 1 second before auto-saving
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            
+            // Check if task was cancelled
+            guard !Task.isCancelled else { return }
+            
+            await performAutoSave()
+        }
     }
-
-    private func saveTimeline() {
+    
+    @MainActor
+    private func performAutoSave() async {
+        guard !isAutoSaving else { return }
+        
         do {
             let updatedMacro = try timelineDraft.buildMacro(from: macro)
-            applyTimeline(from: updatedMacro)
+            isAutoSaving = true
+            suppressTimelineReset = true
+            
             saveTimelineAction(updatedMacro)
+            lastAutoSaveTime = Date()
+            
+            // Reset the saving state after a brief delay
+            try? await Task.sleep(nanoseconds: 500_000_000)
+            isAutoSaving = false
+            
+            // Reset the suppress flag after auto-save completes
+            suppressTimelineReset = false
         } catch {
             timelineErrorMessage = error.localizedDescription
+            isAutoSaving = false
+            suppressTimelineReset = false
         }
     }
 
@@ -1005,8 +1267,12 @@ struct MacroDetailCard: View {
         let baselineDuration = MacroDetailCard.resolveDefaultTimelineDuration(from: defaultTimelineDuration)
         timelineDraft = MacroTimelineDraft(macro: macro, minimumDuration: baselineDuration)
         selectedKeyframeID = nil
-        hasTimelineChanges = false
-        DispatchQueue.main.async {
+        isAutoSaving = false
+        lastAutoSaveTime = Date()
+        suppressTimelineReset = false
+        
+        // Reset the suppress flag after a brief delay to ensure all updates are processed
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             suppressTimelineChange = false
         }
     }

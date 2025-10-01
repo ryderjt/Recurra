@@ -18,7 +18,7 @@ Recurra is a macOS application that provides an intuitive interface for recordin
 
 - **🎯 Precision Recording**: Captures keyboard and mouse events with millisecond accuracy
 - **🎨 Modern Interface**: Beautiful SwiftUI design with smooth animations
-- **⚡ Global Hotkeys**: Instant access with customizable keyboard shortcuts
+- **⚡ Global Hotkeys**: Instant access with customizable keyboard shortcuts for recording, playing, and stopping macros
 - **📊 Timeline Editor**: Visual timeline for fine-tuning macro timing
 - **💾 Persistent Storage**: Reliable macro library with JSON-based persistence
 - **🔒 Privacy-First**: Local storage only, no data leaves your Mac
@@ -72,6 +72,12 @@ open Recurra.xcodeproj
 3. **Perform your actions** (click, type, navigate)
 4. **Press Stop** or use `⌘⌥R` again to finish
 
+### Playing Macros
+1. **Select a macro** from the library sidebar
+2. **Play selected macro** using `⌘⌥S` or the "Play Selected" button
+3. **Play latest macro** using `⌘⌥P` or the "Play Latest" button
+4. **Stop any playing macro** using `⌘⌥Esc`
+
 ### Editing Macros
 1. **Select a macro** from the library sidebar
 2. **Use the timeline editor** to adjust timing
@@ -80,7 +86,9 @@ open Recurra.xcodeproj
 
 ### Global Hotkeys
 - **`⌘⌥R`** - Toggle recording (default)
-- **`⌘⌥P`** - Replay latest macro (default)
+- **`⌘⌥P`** - Play latest macro (default)
+- **`⌘⌥S`** - Play selected macro (default)
+- **`⌘⌥Esc`** - Stop any playing macro (default)
 - **Customizable** in Settings
 
 ## 🔧 Configuration

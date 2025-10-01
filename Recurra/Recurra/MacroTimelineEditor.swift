@@ -191,7 +191,7 @@ private struct TimelineTrackView: View {
             let width = proxy.size.width
             let height = proxy.size.height
             let duration = max(draft.duration, 0.5)
-            let ratio = width / duration
+            let ratio = width > 0 ? width / duration : 0
             let baseline = height * 0.65
 
             ZStack(alignment: .topLeading) {
@@ -208,6 +208,8 @@ private struct TimelineTrackView: View {
                                    isSelected: keyframe.id == selection)
                         .position(x: min(max(12, xPosition), width - 12),
                                   y: baseline)
+                        .id(keyframe.id) // Ensure proper view identity
+                        .opacity(ratio > 0 ? 1 : 0) // Hide if ratio is invalid
                         .highPriorityGesture(
                             DragGesture(minimumDistance: 6)
                                 .onChanged { value in
