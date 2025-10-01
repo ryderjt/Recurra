@@ -111,11 +111,15 @@ final class MenuBarController: NSObject, ObservableObject {
             button.contentTintColor = nil
             applyIdleIcon(to: button)
         case .recording:
+            let recordingIcon = NSImage(systemSymbolName: "record.circle.fill", accessibilityDescription: "Recording")
+            recordingIcon?.isTemplate = true
+            button.image = recordingIcon
             button.contentTintColor = NSColor.systemRed
-            button.image = NSImage(systemSymbolName: "record.circle.fill", accessibilityDescription: "Recording")
         case .replaying:
+            let replayIcon = NSImage(systemSymbolName: "play.circle.fill", accessibilityDescription: "Replaying")
+            replayIcon?.isTemplate = true
+            button.image = replayIcon
             button.contentTintColor = NSColor.systemBlue
-            button.image = NSImage(systemSymbolName: "play.circle.fill", accessibilityDescription: "Replaying")
         case .permissionDenied:
             button.contentTintColor = nil
             applyIdleIcon(to: button)

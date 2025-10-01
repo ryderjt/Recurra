@@ -76,10 +76,8 @@ struct MainView: View {
                 renameText = ""
                 return
             }
-            // Only auto-select if no macro is currently selected
-            if selectedMacroID == nil {
-                selectedMacroID = macros.first?.id
-            }
+            // Always auto-select the most recent macro when a new one is added
+            selectedMacroID = macros.first?.id
         }
         .onChange(of: selectedMacroID) { _ in
             renameText = selectedMacro?.name ?? ""
