@@ -4,7 +4,9 @@ import Combine
 final class MenuBarController: NSObject, ObservableObject {
     private let statusItem: NSStatusItem
     private lazy var idleStatusIcon: NSImage? = {
-        guard let image = Bundle.main.image(forResource: "BasicIconBlack") else { return nil }
+        guard let image = Bundle.main.image(forResource: "StatusBarIcon") else { return nil }
+        // Make the icon white for menu bar display
+        image.isTemplate = true
         return image
     }()
     private let recorder: Recorder
@@ -124,9 +126,12 @@ final class MenuBarController: NSObject, ObservableObject {
         if let icon = idleStatusIcon {
             button.image = icon
         } else {
-            button.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "Macro Recorder")
+            let fallbackIcon = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "Macro Recorder")
+            fallbackIcon?.isTemplate = true
+            button.image = fallbackIcon
         }
-        button.image?.isTemplate = false
+        // Ensure the icon is treated as a template for proper white rendering
+        button.image?.isTemplate = true
     }
 
     @objc private func toggleRecording() {

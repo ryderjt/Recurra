@@ -101,6 +101,8 @@ struct RecurraApp: App {
                 .preferredColorScheme(.dark)
         }
         .defaultSize(width: 960, height: 960)
+        .windowResizability(.contentSize)
+        .windowToolbarStyle(.unified)
         .commands {
             CommandMenu("Macro Controls") {
                 Button(recorder.isRecording ? "Stop Recording" : "Start Recording") {
